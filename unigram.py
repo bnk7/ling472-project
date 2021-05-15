@@ -39,6 +39,11 @@ class LanguageModel:
         pass
 
     def train_unk(self): # Arshana
+	# num_unk = 0
+	# loop through df
+		# if an ngram appears only once then num_unk++
+		# remove the row from df
+	# add row to df with "<UNK>" as index and num_unk as value
         pass
 
     def train_prob(self): # Brynna
@@ -48,6 +53,8 @@ class LanguageModel:
         pass
 
     def print_ngram(self): #Arshana
+	# loop through df
+		# output: "<index> <logged MLE rounded to 3rd decimal place>"
         pass
 
     def train(self, train_corpus):

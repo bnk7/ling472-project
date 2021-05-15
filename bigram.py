@@ -18,12 +18,19 @@ class LanguageModel:
         pass
 
     def smoothing(self): # Arshana
+	# for each w1 in vocab list
+		# for each w2 in vocab list
+			# if "<w1> <w2>" is not an index in df then add it to df with 0 occurrences
+	# loop through df
+		# add 1 to each ngram in df
         pass
 
     def probability(self): # Anna
         pass
 
     def calculate_MLE(self): # Arshana
+	# loop through df
+		# add a column with count / count(w2)
         pass
 
     def print_ngram(self): # Brynna

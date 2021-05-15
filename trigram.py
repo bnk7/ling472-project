@@ -16,6 +16,19 @@ class LanguageModel:
             # or double dashes
         # three dataframes: unigram index, bigram as index and each individual word as a column
         # trigram index and three columns for words
+	
+	# string split on end-of-sentence char(s)
+	# loop through sentences
+		# insert start/stop tokens
+		# split sentences and combine all split sentences into one list
+	# loop through list
+		# for df
+			# create trigram indices
+			# add w1, w2, w3 columns
+			# add count column and increment as appropriate
+		# for vocab df
+			# create unigram indices
+			# add count column and increment as appropriate
         pass
 
     def train_unk(self): # Brynna
