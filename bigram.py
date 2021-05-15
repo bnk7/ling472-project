@@ -1,5 +1,6 @@
 # !/usr/bin/python3
 
+from math import log2
 
 # TODO: Implement a Laplace-smoothed bigram model :)
 class LanguageModel:
@@ -7,12 +8,14 @@ class LanguageModel:
     def __init__(self):
         pass
 
-    def read_data(self, corpus): #Brynna
-        # start and stop tokens
-            # sentence on each line
-            # or double dashes
-        # two dataframes: unigram index, bigram as index and each individual word as a column
-        pass
+    def read_data(self, corpus): # Brynna
+        sentences = corpus.readlines()
+        for line in sentences:
+            line = line.strip()
+            line = "<s> " + line + " </s>"
+        # deal with double dashes?
+        # adapt unigram code to make unigram df
+        # make bigram df with bigram as index and each individual word as a column
 
     def train_unk(self): # Anna
         pass
@@ -33,11 +36,21 @@ class LanguageModel:
 		# add a column with count / count(w2)
         pass
 
+    # prints bigrams and their logged MLEs, rounded to 3 decimal places
+    # and sorted by logged MLE (descending) and then bigram (alphabetical)
     def print_ngram(self): # Brynna
-        pass
+        # add loggedMLE column
+        self.df['loggedMLE'] = self.df.apply(log2)
+        # sort alphabetically
+        self.df.sort_index(inplace = True)
+        # sort by loggedMLE
+        self.df.sort_values(['loggedMLE'], ascending = False, inplace = True)
+        # print
+        print(round(self.df.loggedMLE, 3))
 
     def train(self, train_corpus):
         print('I am an unimplemented BIGRAM train() method.')  # delete this!
+        # read_data(train_corpus)
 
     def score(self, test_corpus):
         print('I am an unimplemented BIGRAM score() method.')  # delete this!
