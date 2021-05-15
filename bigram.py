@@ -1,12 +1,14 @@
 # !/usr/bin/python3
 
 from math import log2
+import pandas as pd
 
 # TODO: Implement a Laplace-smoothed bigram model :)
 class LanguageModel:
 
     def __init__(self):
-        pass
+        self.unigram_df = pd.DataFrame()
+        self.bigram_df = pd.DataFrame()
 
     def read_data(self, corpus): # Brynna
         sentences = corpus.readlines()
@@ -40,13 +42,13 @@ class LanguageModel:
     # and sorted by logged MLE (descending) and then bigram (alphabetical)
     def print_ngram(self): # Brynna
         # add loggedMLE column
-        self.df['loggedMLE'] = self.df.apply(log2)
+        self.bigram_df['loggedMLE'] = self.bigram_df.apply(log2)
         # sort alphabetically
-        self.df.sort_index(inplace = True)
+        self.bigram_df.sort_index(inplace = True)
         # sort by loggedMLE
-        self.df.sort_values(['loggedMLE'], ascending = False, inplace = True)
+        self.bigram_df.sort_values(['loggedMLE'], ascending = False, inplace = True)
         # print
-        print(round(self.df.loggedMLE, 3))
+        print(round(self.bigram_df.loggedMLE, 3))
 
     def train(self, train_corpus):
         print('I am an unimplemented BIGRAM train() method.')  # delete this!
