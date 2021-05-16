@@ -38,6 +38,11 @@ class LanguageModel:
         self.df = pd.DataFrame(columns=["cnt"])
 
     def read_data(self, corpus): # Anna
+        """
+        reads in corpus data to fill in the unigram df with the counts for each word
+        index: word
+        cnt: count of word
+        """
         f = open(corpus, 'r')
         pattern = r'[^a-zA-Z0-9\s]'
         entire_file = f.read()
@@ -73,9 +78,6 @@ class LanguageModel:
     # applies Laplace smoothing and adds a "probability" column
     def train_prob(self): # Brynna
         self.df['probability'] = self.df.apply(get_train_prob)
-
-    def calculate_MLE(self): # Anna
-        pass
 
     def print_ngram(self): #Arshana
 	# loop through df

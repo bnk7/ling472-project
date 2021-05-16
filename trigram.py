@@ -1,3 +1,4 @@
+from math import log2
 import pandas as pd
 import re
 # !/usr/bin/python3
@@ -7,9 +8,9 @@ import re
 class LanguageModel:
 
     def __init__(self):
-        self.unigram = pd.DataFrame(columns=["count"])
-        self.bigram = pd.DataFrame(columns=["w1", "w2", "count"])
-        self.trigram = pd.DataFrame(columns=["w1", "w2", "w3", "count"])
+        self.unigram = pd.DataFrame(columns=["cnt"])
+        self.bigram = pd.DataFrame(columns=["w1", "w2", "cnt"])
+        self.trigram = pd.DataFrame(columns=["w1", "w2", "w3", "cnt"])
 
     def read_data(self, corpus): # Arshana
         # start and stop tokens
@@ -45,7 +46,18 @@ class LanguageModel:
         pass
 
     def print_ngram(self): # Anna
-        pass
+        """
+        log2 the probability and save to new MLE column
+        prints out each trigram with its logged MLE
+        """
+        # <w1> <w2> <w3> <log2(P(w3|w1 w2))>
+        # highest to lowest prob, 3 decimal place rounded
+        # then alphabetical
+        self.trigram["loggedMLE"] = self.trigram["prob"].apply(log2)
+        self.trigram.sort_index(inplace=True)
+        self.trigram.sort_values(by=['prob'], inplace=True, ascending=False)
+        print(round(self.trigram["loggedMLE"], 3))
+
 
     def train(self, train_corpus):
         print('I am an unimplemented TRIGRAM train() method.')  # delete this!

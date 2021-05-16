@@ -21,23 +21,36 @@ class LanguageModel:
         # make bigram df with bigram as index and each individual word as a column
 
     def train_unk(self): # Anna
-        # unigram
-        is_one = self.unigram_df["count"] == 1
+        """
+        Unks the unigram df. Using the unked word list from the unigram,
+        also unks the bigram df.
+        """
+        # UNIGRAM
+        is_one = self.unigram_df["cnt"] == 1
+        # count of words to unk
         unk_count = self.unigram_df[is_one].size
+        # all unked words
         unked_words = self.unigram_df[is_one].index
-        unked_df = self.unigram_df[self.unigram_df["count"] != 1]
-        row = pd.Series(data={"count": unk_count}, name="<UNK>")
+        # dataframe with none of the unked words
+        unked_df = self.unigram_df[self.unigram_df["cnt"] != 1]
+        # create row for unk
+        row = pd.Series(data={"cnt": unk_count}, name="<UNK>")
+        # append row and save to class variable
         self.unigram_df = unked_df.append(row, ignore_index=False)
         
-        # bigram
+        # BIGRAM
+        # replace words that need unk from unigram unk list
         unked_bigram = self.bigram_df.replace(unked_words, "<UNK>")
+        # sum counts with same w1, w2
         unked_bigram = unked_bigram.groupby(['w1', 'w2']).sum()
+        # new dataframe to save groupby with correct indexes and column names
         unked_bigram2 = pd.DataFrame()
         for tup in unked_bigram.index:
             w1, w2 = tup
-            row = pd.Series(data=[w1, w2, unked_bigram.loc[w1, w2]["count"]], name=w1 + " " + w2)
+            row = pd.Series(data=[w1, w2, unked_bigram.loc[w1, w2]["cnt"]], name=w1 + " " + w2)
             unked_bigram2 = unked_bigram2.append(row, ignore_index=False)
-        unked_bigram2.columns = ["w1", "w2", "count"]
+        unked_bigram2.columns = ["w1", "w2", "cnt"]
+        # save to class variable
         self.bigram_df = unked_bigram2
         
 
@@ -50,7 +63,18 @@ class LanguageModel:
         pass
 
     def train_prob(self): # Anna
-        pass
+        """
+        Adds a probability column to the bigram df.
+        """
+        # for each row in bigram df
+        for index, row in self.bigram_df.iterrows():
+            # bigram count
+            num = row['cnt']
+            # w1 count + vocab count (no <s>)
+            denom = self.unigram_df.loc[row['w1'], 'cnt'] + self.unigram_df.size - 1
+            # prob: count / w1 count + vocab count
+            # add column to bigram df
+            self.bigram_df.loc[index, 'prob'] = float(num)/denom
 
     # prints bigrams and their logged MLEs, rounded to 3 decimal places
     # and sorted by logged MLE (descending) and then bigram (alphabetical)
