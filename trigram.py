@@ -1,3 +1,5 @@
+import pandas as pd
+import re
 # !/usr/bin/python3
 
 
@@ -5,7 +7,9 @@
 class LanguageModel:
 
     def __init__(self):
-        pass
+        self.unigram = pd.DataFrame(columns=["count"])
+        self.bigram = pd.DataFrame(columns=["w1", "w2", "count"])
+        self.trigram = pd.DataFrame(columns=["w1", "w2", "w3", "count"])
 
     def read_data(self, corpus): # Arshana
         # start and stop tokens
@@ -24,10 +28,7 @@ class LanguageModel:
     def smoothing(self): # Anna
         pass
 
-    def probability(self): # Arshana
-        pass
-
-    def calculate_MLE(self): # Brynna
+    def train_prob(self): # Arshana
         pass
 
     def print_ngram(self): # Anna

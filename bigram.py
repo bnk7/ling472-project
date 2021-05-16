@@ -1,3 +1,5 @@
+import pandas as pd
+import re
 # !/usr/bin/python3
 
 
@@ -5,7 +7,10 @@
 class LanguageModel:
 
     def __init__(self):
-        pass
+        self.unigram = pd.DataFrame(columns=["count"])
+        self.bigram = pd.DataFrame(columns=["w1", "w2", "count"])
+        
+        
 
     def read_data(self, corpus): #Brynna
         # start and stop tokens
@@ -15,15 +20,31 @@ class LanguageModel:
         pass
 
     def train_unk(self): # Anna
-        pass
+        # unigram
+        is_one = self.unigram["count"] == 1
+        unk_count = self.unigram[is_one].size
+        unked_words = self.unigram[is_one].index
+        unked_df = self.unigram[self.unigram["count"] != 1]
+        row = pd.Series(data={"count": unk_count}, name="<UNK>")
+        self.unigram = unked_df.append(row, ignore_index=False)
+        
+        # bigram
+        unked_bigram = self.bigram.replace(unked_words, "<UNK>")
+        unked_bigram = unked_bigram.groupby(['w1', 'w2']).sum()
+        unked_bigram2 = pd.DataFrame()
+        for tup in unked_bigram.index:
+            w1, w2 = tup
+            row = pd.Series(data=[w1, w2, unked_bigram.loc[w1, w2]["count"]], name=w1 + " " + w2)
+            unked_bigram2 = unked_bigram2.append(row, ignore_index=False)
+        unked_bigram2.columns = ["w1", "w2", "count"]
+        self.bigram = unked_bigram2
+        print(self.bigram)
+        
 
     def smoothing(self): # Arshana
         pass
 
-    def probability(self): # Anna
-        pass
-
-    def calculate_MLE(self): # Arshana
+    def train_prob(self): # Anna
         pass
 
     def print_ngram(self): # Brynna

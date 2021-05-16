@@ -1,3 +1,5 @@
+import pandas as pd
+import re
 # !/usr/bin/python3
 
 """
@@ -32,25 +34,36 @@ Perplexity, sum each log probability for each sentence
 class LanguageModel:
 
     def __init__(self):
-        # df
-        pass
+        self.unigram = pd.DataFrame(columns=["count"])
 
     def read_data(self, corpus): # Anna
-        pass
+        f = open(corpus, 'r')
+        pattern = r'[^a-zA-Z0-9\s]'
+        entire_file = f.read()
+        entire_file = re.sub(pattern=pattern, repl='', string=entire_file)
+        entire_file = entire_file.split()
+        for word in entire_file:
+            if word in self.unigram.index:
+                self.unigram.loc[word, "count"] += 1
+            else:
+                row = pd.Series(data={"count": 1}, name=word)
+                self.unigram = self.unigram.append(row, ignore_index=False)
+        print(self.unigram)
+        f.close()
+
 
     def train_unk(self): # Arshana
         pass
 
     def train_prob(self): # Brynna
-        pass
-
-    def calculate_MLE(self): # Anna
+        #smoothing here too
         pass
 
     def print_ngram(self): #Arshana
         pass
 
     def train(self, train_corpus):
+        self.read_data(train_corpus)
         print('I am an unimplemented UNIGRAM train() method.')  # delete this!
 
     def score_unk(self, sent):
