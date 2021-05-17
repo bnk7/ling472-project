@@ -8,16 +8,29 @@ import re
 class LanguageModel:
 
     def __init__(self):
-        self.unigram_df = pd.DataFrame()
-        self.bigram_df = pd.DataFrame()
+        self.unigram_df = pd.DataFrame(columns=["cnt"])
+        self.bigram_df = pd.DataFrame(columns=["word1", "word2", "cnt"])
 
     def read_data(self, corpus): # Brynna
-        sentences = corpus.readlines()
-        for line in sentences:
+        entire_file = corpus.read()
+        # get rid of most punctuation
+        entire_file = re.sub(pattern=r'[^a-zA-Z0-9\s-]', repl="", string=entire_file)
+        # add beginning and end of sentence tokens
+        for line in entire_file:
             line = line.strip()
             line = "<s> " + line + " </s>"
-        # deal with double dashes?
-        # adapt unigram code to make unigram df
+        # remove if -- doesn't mark the end of a sentence
+        entire_file = re.sub(pattern="--", repl="</s> <s>", string=entire_file)
+
+        # adapt Anna's unigram code to make unigram df
+        entire_file = entire_file.split()
+        for word in entire_file:
+            if word in self.unigram_df.index:
+                self.unigram_df.loc[word, "cnt"] += 1
+            elif word != "<s>":
+                row = pd.Series(data={"cnt": 1}, name=word)
+                self.unigram_df = self.unigram_df.append(row, ignore_index=False)
+
         # make bigram df with bigram as index and each individual word as a column
 
     def train_unk(self): # Anna
@@ -37,7 +50,7 @@ class LanguageModel:
         row = pd.Series(data={"cnt": unk_count}, name="<UNK>")
         # append row and save to class variable
         self.unigram_df = unked_df.append(row, ignore_index=False)
-        
+
         # BIGRAM
         # replace words that need unk from unigram unk list
         unked_bigram = self.bigram_df.replace(unked_words, "<UNK>")
@@ -52,7 +65,7 @@ class LanguageModel:
         unked_bigram2.columns = ["w1", "w2", "cnt"]
         # save to class variable
         self.bigram_df = unked_bigram2
-        
+
 
     def smoothing(self): # Arshana
 	# for each w1 in vocab list

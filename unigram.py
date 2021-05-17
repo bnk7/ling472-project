@@ -29,8 +29,6 @@ Perplexity, sum each log probability for each sentence
 
 """
 
-import pandas as pd
-
 # TODO: Implement a Laplace-smoothed unigram model :)
 class LanguageModel:
 
