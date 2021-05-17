@@ -80,7 +80,7 @@ class LanguageModel:
         self.df['probability'] = self.df.apply(get_train_prob)
 
     def print_ngram(self): #Arshana
-        self.df['MLE'] = self.df.apply(lambda row: math.log2(row['count']), axis=1)
+        self.df['MLE'] = self.df['probability'].apply(lambda prob: math.log2(prob), axis=1)
         self.df.sort_index(inplace = True)
         self.df.sort_values(['MLE'], ascending = False, inplace = True)
 
