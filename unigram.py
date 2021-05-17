@@ -2,6 +2,7 @@
 
 import pandas as pd
 import re
+import math
 
 """
 read in data: one function
@@ -57,12 +58,13 @@ class LanguageModel:
 
 
     def train_unk(self): # Arshana
-	# num_unk = 0
-	# loop through df
-		# if an ngram appears only once then num_unk++
-		# remove the row from df
-	# add row to df with "<UNK>" as index and num_unk as value
-        pass
+        num_unk = self.df.loc[df['count'] == 1].size
+        # remove UNKed words
+        df = self.df[self.df['count] != 1]
+        # create UNK row
+        row = pd.Series(data={'count': num_unk}, name="<UNK>")
+        # append row
+        self.df = df.append(row, ignore_index=False)	
 
     # returns the smoothed probability of a single word
     def get_train_prob(self, cnt):
@@ -78,9 +80,12 @@ class LanguageModel:
         self.df['probability'] = self.df.apply(get_train_prob)
 
     def print_ngram(self): #Arshana
-	# loop through df
-		# output: "<index> <logged MLE rounded to 3rd decimal place>"
-        pass
+        self.df['MLE'] = self.df.apply(lambda row: math.log2(row['count']), axis=1)
+        self.df.sort_index(inplace = True)
+        self.df.sort_values(['MLE'], ascending = False, inplace = True)
+
+        for index, row in df.iterrows():
+    		print(index, round(row['MLE'], 3))
 
     def train(self, train_corpus):
         self.read_data(train_corpus)
