@@ -13,19 +13,8 @@ class LanguageModel:
         self.trigram = pd.DataFrame(columns=["w1", "w2", "w3", "cnt"])
 
     def read_data(self, corpus): # Arshana
-        # start and stop tokens
-            # two start token on the first sentence
-            # two stop on the last
-            # rest one
-            # sentence on each line
-            # or double dashes
-        # three dataframes: unigram index, bigram as index and each individual word as a column
         # trigram index and three columns for words
 	
-        # string split on end-of-sentence char(s)
-        # loop through sentences
-            # insert start/stop tokens
-            # split sentences and combine all split sentences into one list
         # loop through list
             # for df
                 # create trigram indices
@@ -34,6 +23,29 @@ class LanguageModel:
             # for vocab df
                 # create unigram indices
                 # add count column and increment as appropriate
+        # adapt code from bigram file
+        entire_file = corpus.read()
+        # extra start and stop token on first and last lines
+        entire file = "<s> " + entire_file + "</s>"
+        # get rid of most punctuation
+        entire_file = re.sub(pattern=r'[^a-zA-Z0-9\s-]', repl="", string=entire_file)
+        # add beginning and end of sentence tokens
+        for line in entire_file:
+            line = line.strip()
+            line = "<s> " + line + " </s>"
+        # remove if -- doesn't mark the end of a sentence
+        entire_file = re.sub(pattern="--", repl="</s> <s>", string=entire_file)
+
+        # unigram df
+        entire_file = entire_file.split()
+        for word in entire_file:
+            if word in self.unigram.index:
+                self.unigram.loc[word, "cnt"] += 1
+            elif word != "<s>" and word != "</s":
+                row = pd.Series(data={"cnt": 1}, name=word)
+                self.unigram = self.unigram.append(row, ignore_index=False)
+        # bigram df
+        # trigram df
         pass
 
     def train_unk(self): # Brynna
