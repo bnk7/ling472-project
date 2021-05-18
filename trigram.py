@@ -100,6 +100,7 @@ class LanguageModel:
         self.trigram_df = unked_trigram
 
     def smoothing(self): # Anna
+        # confused about this, will write after we meet tues
         pass
 
     def train_prob(self): # Arshana
@@ -117,10 +118,12 @@ class LanguageModel:
         # <w1> <w2> <w3> <log2(P(w3|w1 w2))>
         # highest to lowest prob, 3 decimal place rounded
         # then alphabetical
-        self.trigram["loggedMLE"] = self.trigram["prob"].apply(log2)
+        # adapted from both bigram and unigram
+        self.trigram["MLE"] = self.trigram["prob"].apply(log2)
         self.trigram.sort_index(inplace=True)
         self.trigram.sort_values(by=['prob'], inplace=True, ascending=False)
-        print(round(self.trigram["loggedMLE"], 3))
+        for index, row in self.trigram.iterrows():
+    	    print(index, round(row['MLE'], 3))
 
 
     def train(self, train_corpus):
