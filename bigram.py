@@ -79,20 +79,7 @@ class LanguageModel:
     def add_one(x):
         return x + 1
 
-    def smoothing(self): # Arshana
-        # for each w1 in vocab list
-        for w1 in unigram_df.index:
-            # for each w2 in vocab list
-            for w2 in unigram_df.index:
-                # if "<w1> <w2>" is not an index in df then add it to df with 0 occurrences
-                idx = w1 + w2
-                if idx not in self.unigram_df.index:
-                    row = pd.Series(data={"cnt": 0}, name=idx)
-
-        # loop through df
-            # add 1 to each ngram in df
-        self.bigram_df['cnt'] = self.bigram_df['cnt'].apply(add_one)
-
+    # include smoothing in train_prob
     def train_prob(self): # Anna
         """
         Adds a probability column to the bigram df.
