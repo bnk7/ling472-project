@@ -103,10 +103,11 @@ class LanguageModel:
         pass
 
     def train_prob(self): # Arshana
-        for idx, row in self.trigram.iterrows():
-            count = row['cnt']
-            denom = self.bigram.loc[row['w1'] + " " + row['w2'], "cnt"]
-            self.trigram.loc[idx, 'prob'] = float(count)/denom
+        # folded smoothing into this method
+        for index, row in self.trigram.iterrows():
+            count = row['cnt'] + 1
+            denom = self.bigram.loc[row['w1'] + " " + row['w2'], "cnt"] + len(self.unigram.index)
+            self.trigram.loc[index, 'prob'] = float(count)/denom
 
     def print_ngram(self): # Anna
         """
