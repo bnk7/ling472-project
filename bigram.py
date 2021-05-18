@@ -4,7 +4,6 @@ from math import log2
 import pandas as pd
 import re
 
-# TODO: Implement a Laplace-smoothed bigram model :)
 class LanguageModel:
 
     def __init__(self):
@@ -12,15 +11,16 @@ class LanguageModel:
         self.bigram_df = pd.DataFrame(columns=["word1", "word2", "cnt"])
 
     def read_data(self, corpus): # Brynna
-        entire_file = corpus.read()
-        # get rid of most punctuation
-        entire_file = re.sub(pattern=r'[^a-zA-Z0-9\s-]', repl="", string=entire_file)
-        # add beginning and end of sentence tokens
-        for line in entire_file:
+        lines = corpus.readlines()
+        entire_file = ""
+        for line in lines:
             line = line.strip()
-            line = "<s> " + line + " </s>"
-        # remove if -- doesn't mark the end of a sentence
-        entire_file = re.sub(pattern="--", repl="</s> <s>", string=entire_file)
+            # get rid of most punctuation
+            line = re.sub(pattern=r" [^a-zA-Z0-9\s-]", repl="", string=line)
+            # remove if "--" doesn't mark the end of a sentence
+            line = re.sub(pattern="--", repl="</s> <s>", string=line)
+            # add beginning and end of sentence tokens
+            entire_file += "<s> " + line + " </s> "
 
         # adapt Anna's unigram code to make unigram df
         entire_file = entire_file.split()
@@ -32,6 +32,16 @@ class LanguageModel:
                 self.unigram_df = self.unigram_df.append(row, ignore_index=False)
 
         # make bigram df with bigram as index and each individual word as a column
+        # I used Anna's code as a starting point here too
+        for i in range(len(entire_file)-1):
+            first_word = entire_file[i]
+            second_word = entire_file[i+1]
+            bigram = first_word + " " + second_word
+            if bigram in self.bigram_df.index:
+                self.bigram_df.loc[bigram, "cnt"] += 1
+            elif second_word != "<s>":
+                row = pd.Series(data={"cnt": 1, "word1": first_word, "word2": second_word}, name=bigram)
+                self.bigram_df = self.bigram_df.append(row, ignore_index=False)
 
     def train_unk(self): # Anna
         """
@@ -78,7 +88,7 @@ class LanguageModel:
                 idx = w1 + w2
                 if idx not in self.unigram_df.index:
                     row = pd.Series(data={"cnt": 0}, name=idx)
-                    
+
         # loop through df
             # add 1 to each ngram in df
         self.bigram_df['cnt'] = self.bigram_df['cnt'].apply(add_one)
@@ -111,6 +121,7 @@ class LanguageModel:
 
     def train(self, train_corpus):
         print('I am an unimplemented BIGRAM train() method.')  # delete this!
+        # In what format is train_corpus being passed in? 
         # read_data(train_corpus)
 
     def score(self, test_corpus):
