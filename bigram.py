@@ -101,8 +101,8 @@ class LanguageModel:
         for index, row in self.bigram_df.iterrows():
             # bigram count
             num = row['cnt']
-            # w1 count + vocab count (no <s>)
-            denom = self.unigram_df.loc[row['w1'], 'cnt'] + self.unigram_df.size - 1
+            # w1 count + vocab count (no <s> already)
+            denom = self.unigram_df.loc[row['w1'], 'cnt'] + self.unigram_df.size
             # prob: count / w1 count + vocab count
             # add column to bigram df
             self.bigram_df.loc[index, 'prob'] = float(num)/denom

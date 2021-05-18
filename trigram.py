@@ -99,10 +99,6 @@ class LanguageModel:
         unked_trigram["cnt"] = unked_trigram.cnt.apply(int)
         self.trigram_df = unked_trigram
 
-    def smoothing(self): # Anna
-        # confused about this, will write after we meet tues
-        pass
-
     def train_prob(self): # Arshana
         # folded smoothing into this method
         for index, row in self.trigram.iterrows():
