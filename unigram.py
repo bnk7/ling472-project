@@ -58,7 +58,7 @@ class LanguageModel:
     def train_unk(self): # Arshana
         num_unk = self.df.loc[df['count'] == 1].size
         # remove UNKed words
-        df = self.df[self.df['count] != 1]
+        self.df.drop(self.df[self.df['count'] == 1].index, inplace=True)
         # create UNK row
         row = pd.Series(data={'count': num_unk}, name="<UNK>")
         # append row
