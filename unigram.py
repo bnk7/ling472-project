@@ -30,7 +30,6 @@ Perplexity, sum each log probability for each sentence
 
 """
 
-# TODO: Implement a Laplace-smoothed unigram model :)
 class LanguageModel:
 
     def __init__(self):
@@ -56,7 +55,6 @@ class LanguageModel:
         print(self.df)
         f.close()
 
-
     def train_unk(self): # Arshana
         num_unk = self.df.loc[df['count'] == 1].size
         # remove UNKed words
@@ -64,10 +62,10 @@ class LanguageModel:
         # create UNK row
         row = pd.Series(data={'count': num_unk}, name="<UNK>")
         # append row
-        self.df = df.append(row, ignore_index=False)	
+        self.df = df.append(row, ignore_index=False)
 
     # returns the smoothed probability of a single word
-    def get_train_prob(self, cnt):
+    def get_train_prob(self, cnt): # Brynna
         # P = (count of unigram + 1)/(sum of all counts + size of vocab)
         num_tokens = self.df.cnt.sum()
         num_types = self.df.shape[0]

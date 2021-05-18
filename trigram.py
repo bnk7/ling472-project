@@ -3,8 +3,6 @@ import pandas as pd
 import re
 # !/usr/bin/python3
 
-
-# TODO: Implement a Laplace-smoothed trigram model :)
 class LanguageModel:
 
     def __init__(self):
@@ -14,7 +12,7 @@ class LanguageModel:
 
     def read_data(self, corpus): # Arshana
         # trigram index and three columns for words
-	
+
         # loop through list
             # for df
                 # create trigram indices
@@ -48,8 +46,39 @@ class LanguageModel:
         # trigram df
         pass
 
+    # changes tokens only seen once into <UNK> and updates all dataframes
     def train_unk(self): # Brynna
-        pass
+        # adapt Arshana's unigram train_unk to UNK unigram_df
+        num_unk = self.unigram_df.loc[self.unigram_df["cnt"] == 1].size
+        unked_words = self.unigram_df[self.unigram_df["cnt"] == 1].index
+        df = self.unigram_df[self.unigram_df["cnt"] != 1]
+        row = pd.Series(data={"cnt": num_unk}, name="<UNK>")
+        self.unigram_df = df.append(row, ignore_index=False)
+
+        # adapt Anna's bigram train_unk to UNK bigram_df
+        self.bigram_df = self.bigram_df.replace(unked_words, "<UNK>")
+        self.bigram_df = self.bigram_df.groupby(['word1', 'word2']).sum()
+        unked_bigram = pd.DataFrame()
+        for tup in self.bigram_df.index:
+            w1, w2 = tup
+            row = pd.Series(data=[w1, w2, self.bigram_df.loc[w1, w2]["cnt"]], name=w1 + " " + w2)
+            unked_bigram = unked_bigram.append(row, ignore_index=False)
+            unked_bigram.columns = ["word1", "word2", "cnt"]
+        unked_bigram["cnt"] = unked_bigram.cnt.apply(int)
+        self.bigram_df = unked_bigram
+
+        # trigram
+        self.trigram_df = self.trigram_df.replace(unked_words, "<UNK>")
+        self.trigram_df = self.trigram_df.groupby(['word1', 'word2', 'word3']).sum()
+        unked_trigram = pd.DataFrame()
+        for tup in self.trigram_df.index:
+            w1, w2, w3 = tup
+            row = pd.Series(data=[w1, w2, w3, self.trigram_df.loc[w1, w2, w3]["cnt"]], \
+                name=w1 + " " + w2 + " " + w3)
+            unked_trigram = unked_trigram.append(row, ignore_index=False)
+            unked_trigram.columns = ["word1", "word2", "word3", "cnt"]
+        unked_trigram["cnt"] = unked_trigram.cnt.apply(int)
+        self.trigram_df = unked_trigram
 
     def smoothing(self): # Anna
         pass
