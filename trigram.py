@@ -21,7 +21,7 @@ class LanguageModel:
             # for vocab df
                 # create unigram indices
                 # add count column and increment as appropriate
-        # adapt code from bigram file
+        # adapt code from bigram.py
         entire_file = corpus.read()
         # extra start and stop token on first and last lines
         entire file = "<s> " + entire_file + "</s>"
@@ -34,7 +34,7 @@ class LanguageModel:
         # remove if -- doesn't mark the end of a sentence
         entire_file = re.sub(pattern="--", repl="</s> <s>", string=entire_file)
 
-        # unigram df
+        # unigram df - adapted from bigram.py
         entire_file = entire_file.split()
         for word in entire_file:
             if word in self.unigram.index:
@@ -42,8 +42,27 @@ class LanguageModel:
             elif word != "<s>" and word != "</s":
                 row = pd.Series(data={"cnt": 1}, name=word)
                 self.unigram = self.unigram.append(row, ignore_index=False)
-        # bigram df
-        # trigram df
+        # bigram df - adapted from bigram.py
+        for i in range(len(entire_file)-1):
+            first_word = entire_file[i]
+            second_word = entire_file[i+1]
+            gram = first_word + " " + second_word
+            if gram in self.bigram.index:
+                self.bigram.loc[gram, "cnt"] += 1
+            else:
+                row = pd.Series(data={"cnt": 1, "word1": first_word, "word2": second_word}, name=gram)
+                self.bigram = self.bigram.append(row, ignore_index=False)
+        # trigram df - adapted from bigram.py
+        for i in range(len(entire_file)-2):
+            w1 = entire_file[i]
+            w2 = entire_file[i+1]
+            w3 = entire_file[i+2]
+            gram = w1 + " " + w2 + " " + w3
+            if gram in self.trigram.index:
+                self.trigram.loc[gram, "cnt"] += 1
+            else:
+                row = pd.Series(data={"cnt": 1, "word1": w1, "word2": w2, "word3": w3}, name=gram)
+                self.bigram = self.bigram.append(row, ignore_index=False)
         pass
 
     # changes tokens only seen once into <UNK> and updates all dataframes
@@ -84,7 +103,10 @@ class LanguageModel:
         pass
 
     def train_prob(self): # Arshana
-        pass
+        for idx, row in self.trigram.iterrows():
+            count = row['cnt']
+            denom = self.bigram.loc[row['w1'] + " " + row['w2'], "cnt"]
+            self.trigram.loc[idx, 'prob'] = float(count)/denom
 
     def print_ngram(self): # Anna
         """
