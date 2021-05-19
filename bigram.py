@@ -8,7 +8,7 @@ class LanguageModel:
 
     def __init__(self):
         self.unigram_df = pd.DataFrame(columns=["cnt"])
-        self.bigram_df = pd.DataFrame(columns=["word1", "word2", "cnt"])
+        self.bigram_df = pd.DataFrame(columns=["w1", "w2", "cnt"])
 
     def read_data(self, corpus): # Brynna
         f = open(corpus, 'r')
@@ -42,7 +42,7 @@ class LanguageModel:
             if bigram in self.bigram_df.index:
                 self.bigram_df.loc[bigram, "cnt"] += 1
             elif second_word != "<s>":
-                row = pd.Series(data={"cnt": 1, "word1": first_word, "word2": second_word}, name=bigram)
+                row = pd.Series(data={"cnt": 1, "w1": first_word, "w2": second_word}, name=bigram)
                 self.bigram_df = self.bigram_df.append(row, ignore_index=False)
 
     def train_unk(self): # Anna
