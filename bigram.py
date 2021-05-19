@@ -11,7 +11,8 @@ class LanguageModel:
         self.bigram_df = pd.DataFrame(columns=["word1", "word2", "cnt"])
 
     def read_data(self, corpus): # Brynna
-        lines = corpus.readlines()
+        f = open(corpus, 'r')
+        lines = f.readlines()
         entire_file = ""
         for line in lines:
             line = line.strip()
@@ -21,6 +22,7 @@ class LanguageModel:
             line = re.sub(pattern="--", repl="</s> <s>", string=line)
             # add beginning and end of sentence tokens
             entire_file += "<s> " + line + " </s> "
+        f.close()
 
         # adapt Anna's unigram code to make unigram df
         entire_file = entire_file.split()
@@ -51,7 +53,7 @@ class LanguageModel:
         # UNIGRAM
         is_one = self.unigram_df["cnt"] == 1
         # count of words to unk
-        unk_count = self.unigram_df[is_one].size
+        unk_count = len(self.unigram_df[is_one].index)
         # all unked words
         unked_words = self.unigram_df[is_one].index
         # dataframe with none of the unked words
@@ -76,8 +78,6 @@ class LanguageModel:
         # save to class variable
         self.bigram_df = unked_bigram2
 
-    def add_one(x):
-        return x + 1
 
     # include smoothing in train_prob
     def train_prob(self): # Anna
@@ -87,29 +87,51 @@ class LanguageModel:
         # for each row in bigram df
         for index, row in self.bigram_df.iterrows():
             # bigram count
-            num = row['cnt']
+            num = row['cnt'] + 1
             # w1 count + vocab count (no <s> already)
-            denom = self.unigram_df.loc[row['w1'], 'cnt'] + self.unigram_df.size
+            denom = self.unigram_df.loc[row['w1'], 'cnt'] + len(self.unigram_df.index)
             # prob: count / w1 count + vocab count
             # add column to bigram df
-            self.bigram_df.loc[index, 'prob'] = float(num)/denom
+            self.bigram_df.loc[index, 'MLE'] = log2(float(num)/denom)
 
     # prints bigrams and their logged MLEs, rounded to 3 decimal places
     # and sorted by logged MLE (descending) and then bigram (alphabetical)
     def print_ngram(self): # Brynna
-        # add loggedMLE column
-        self.bigram_df['loggedMLE'] = self.bigram_df.apply(log2)
-        # sort alphabetically
+        # fix sort alphabetically
         self.bigram_df.sort_index(inplace = True)
         # sort by loggedMLE
-        self.bigram_df.sort_values(['loggedMLE'], ascending = False, inplace = True)
+        self.bigram_df.sort_values(['MLE'], ascending = False, inplace = True)
         # print
-        print(round(self.bigram_df.loggedMLE, 3))
+        for index, row in self.bigram_df.iterrows():
+    	    print(index, round(row['MLE'], 3))
 
     def train(self, train_corpus):
-        print('I am an unimplemented BIGRAM train() method.')  # delete this!
-        # In what format is train_corpus being passed in? 
-        # read_data(train_corpus)
+        self.read_data(train_corpus)
+        self.train_unk()
+        self.train_prob()
+        self.print_ngram()
 
-    def score(self, test_corpus):
+    def score_unk(self, sent): # Brynna
+        # keep as sentence, unk
+
+        pass
+
+    def score_prob(self, sent): # Arshana
+        pass
+
+    def calc_perplex(self, sum, count): # Anna
+        pass
+
+    def score(self, test_corpus): # Brynna
         print('I am an unimplemented BIGRAM score() method.')  # delete this!
+
+        # total_prob = 0
+        # num_sent = 0
+        # break test_corpus -> entire_file
+            # num_sent++
+            # print (line1)
+            # score_unk (line1) -> return unked sent
+                # add start and stop tokens
+            # score_prob(sent) -> return prob1
+            # total_prob += prob1
+        # calc_perplex(total_prob, num_sent)

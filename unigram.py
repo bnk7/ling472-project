@@ -2,7 +2,7 @@
 
 import pandas as pd
 import re
-import math
+from math import log2
 
 """
 read in data: one function
@@ -48,21 +48,21 @@ class LanguageModel:
         entire_file = entire_file.split()
         for word in entire_file:
             if word in self.df.index:
-                self.df.loc[word, "count"] += 1
+                self.df.loc[word, "cnt"] += 1
             else:
-                row = pd.Series(data={"count": 1}, name=word)
+                row = pd.Series(data={"cnt": 1}, name=word)
                 self.df = self.df.append(row, ignore_index=False)
         print(self.df)
         f.close()
 
     def train_unk(self): # Arshana
-        num_unk = self.df.loc[df['count'] == 1].size
+        num_unk = self.df.loc[self.df['cnt'] == 1].size
         # remove UNKed words
-        self.df.drop(self.df[self.df['count'] == 1].index, inplace=True)
+        self.df.drop(self.df[self.df['cnt'] == 1].index, inplace=True)
         # create UNK row
-        row = pd.Series(data={'count': num_unk}, name="<UNK>")
+        row = pd.Series(data={'cnt': num_unk}, name="<UNK>")
         # append row
-        self.df = df.append(row, ignore_index=False)
+        self.df = self.df.append(row, ignore_index=False)
 
     # returns the smoothed probability of a single word
     def get_train_prob(self, cnt): # Brynna
@@ -70,38 +70,53 @@ class LanguageModel:
         num_tokens = self.df.cnt.sum()
         num_types = self.df.shape[0]
         denominator = num_tokens + num_types
-        prob = (cnt + 1)/denominator
+        prob = log2((cnt + 1)/denominator)
         return prob
 
     # applies Laplace smoothing and adds a "probability" column
     def train_prob(self): # Brynna
-        self.df['probability'] = self.df.apply(get_train_prob)
+        self.df['MLE'] = self.df.cnt.apply(self.get_train_prob)
 
     def print_ngram(self): #Arshana
-        self.df['MLE'] = self.df['probability'].apply(lambda prob: math.log2(prob), axis=1)
-        self.df.sort_index(inplace = True)
-        self.df.sort_values(['MLE'], ascending = False, inplace = True)
+        # fix alphabetical
+        self.df.index.name = "index"
+        self.df.sort_values(by=['MLE', "index"], ascending = [False, True], inplace = True)
 
-        for index, row in df.iterrows():
-    		print(index, round(row['MLE'], 3))
+        for index, row in self.df.iterrows():
+            print(index, round(row['MLE'], 3))
 
     def train(self, train_corpus):
         self.read_data(train_corpus)
-        print('I am an unimplemented UNIGRAM train() method.')  # delete this!
-        # train_prob()
+        self.train_unk()
+        self.train_prob()
+        self.print_ngram()
 
-    def score_unk(self, sent):
+    def score_unk(self, sent): # Anna
+        # keep as sentence, unk
+
         pass
 
-    def score_prob(self, sent):
+    def score_prob(self, sent): # Brynna
         pass
 
-    def calc_perplex(self, sum, count):
+    def calc_perplex(self, sum, count): # Arshana
         pass
 
-    def score(self, test_corpus):
+    def score(self, test_corpus): # Anna
         # move through sentences, pass one at a time
         # use read_data
         # sum probability variable
         # count sentences variable
         print('I am an unimplemented UNIGRAM score() method.')  # delete this!
+
+        # total_prob = 0
+        # num_sent = 0
+        # break test_corpus -> entire_file
+            # num_sent++
+            # print (line1)
+            # score_unk (line1) -> return unked sent
+                # add start and stop tokens
+            # score_prob(sent) -> return prob1
+            # total_prob += prob1
+        # calc_perplex(total_prob, num_sent)
+

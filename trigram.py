@@ -7,8 +7,8 @@ class LanguageModel:
 
     def __init__(self):
         self.unigram = pd.DataFrame(columns=["cnt"])
-        self.bigram = pd.DataFrame(columns=["w1", "w2", "cnt"])
-        self.trigram = pd.DataFrame(columns=["w1", "w2", "w3", "cnt"])
+        self.bigram = pd.DataFrame(columns=["word1", "word2", "cnt"])
+        self.trigram = pd.DataFrame(columns=["word1", "word2", "word3", "cnt"])
 
     def read_data(self, corpus): # Arshana
         # trigram index and three columns for words
@@ -24,7 +24,7 @@ class LanguageModel:
         # adapt code from bigram.py
         entire_file = corpus.read()
         # extra start and stop token on first and last lines
-        entire file = "<s> " + entire_file + "</s>"
+        entire_file = "<s> " + entire_file
         # get rid of most punctuation
         entire_file = re.sub(pattern=r'[^a-zA-Z0-9\s-]', repl="", string=entire_file)
         # add beginning and end of sentence tokens
@@ -39,7 +39,7 @@ class LanguageModel:
         for word in entire_file:
             if word in self.unigram.index:
                 self.unigram.loc[word, "cnt"] += 1
-            elif word != "<s>" and word != "</s":
+            elif word != "<s>":
                 row = pd.Series(data={"cnt": 1}, name=word)
                 self.unigram = self.unigram.append(row, ignore_index=False)
         # bigram df - adapted from bigram.py
@@ -68,43 +68,45 @@ class LanguageModel:
     # changes tokens only seen once into <UNK> and updates all dataframes
     def train_unk(self): # Brynna
         # adapt Arshana's unigram train_unk to UNK unigram_df
-        num_unk = self.unigram_df.loc[self.unigram_df["cnt"] == 1].size
-        unked_words = self.unigram_df[self.unigram_df["cnt"] == 1].index
-        df = self.unigram_df[self.unigram_df["cnt"] != 1]
+        num_unk = self.unigram.loc[self.unigram["cnt"] == 1].size
+        unked_words = self.unigram[self.unigram["cnt"] == 1].index
+        df = self.unigram[self.unigram["cnt"] != 1]
         row = pd.Series(data={"cnt": num_unk}, name="<UNK>")
-        self.unigram_df = df.append(row, ignore_index=False)
+        self.unigram = df.append(row, ignore_index=False)
 
         # adapt Anna's bigram train_unk to UNK bigram_df
-        self.bigram_df = self.bigram_df.replace(unked_words, "<UNK>")
-        self.bigram_df = self.bigram_df.groupby(['word1', 'word2']).sum()
+        self.bigram = self.bigram.replace(unked_words, "<UNK>")
+        self.bigram = self.bigram.groupby(['word1', 'word2']).sum()
         unked_bigram = pd.DataFrame()
-        for tup in self.bigram_df.index:
+        for tup in self.bigram.index:
             w1, w2 = tup
-            row = pd.Series(data=[w1, w2, self.bigram_df.loc[w1, w2]["cnt"]], name=w1 + " " + w2)
+            row = pd.Series(data=[w1, w2, self.bigram.loc[w1, w2]["cnt"]], name=w1 + " " + w2)
             unked_bigram = unked_bigram.append(row, ignore_index=False)
             unked_bigram.columns = ["word1", "word2", "cnt"]
         unked_bigram["cnt"] = unked_bigram.cnt.apply(int)
-        self.bigram_df = unked_bigram
+        self.bigram = unked_bigram
 
         # trigram
-        self.trigram_df = self.trigram_df.replace(unked_words, "<UNK>")
-        self.trigram_df = self.trigram_df.groupby(['word1', 'word2', 'word3']).sum()
+        self.trigram = self.trigram.replace(unked_words, "<UNK>")
+        self.trigram = self.trigram.groupby(['word1', 'word2', 'word3']).sum()
         unked_trigram = pd.DataFrame()
-        for tup in self.trigram_df.index:
+        for tup in self.trigram.index:
             w1, w2, w3 = tup
-            row = pd.Series(data=[w1, w2, w3, self.trigram_df.loc[w1, w2, w3]["cnt"]], \
+            row = pd.Series(data=[w1, w2, w3, self.trigram.loc[w1, w2, w3]["cnt"]], \
                 name=w1 + " " + w2 + " " + w3)
             unked_trigram = unked_trigram.append(row, ignore_index=False)
             unked_trigram.columns = ["word1", "word2", "word3", "cnt"]
         unked_trigram["cnt"] = unked_trigram.cnt.apply(int)
-        self.trigram_df = unked_trigram
+        self.trigram = unked_trigram
+
+        # add something if unk if missing from data possibly
 
     def train_prob(self): # Arshana
         # folded smoothing into this method
         for index, row in self.trigram.iterrows():
             count = row['cnt'] + 1
-            denom = self.bigram.loc[row['w1'] + " " + row['w2'], "cnt"] + len(self.unigram.index)
-            self.trigram.loc[index, 'prob'] = float(count)/denom
+            denom = self.bigram.loc[row['word1'] + " " + row['word2'], "cnt"] + len(self.unigram.index)
+            self.trigram.loc[index, 'MLE'] = log2(float(count)/denom)
 
     def print_ngram(self): # Anna
         """
@@ -115,9 +117,9 @@ class LanguageModel:
         # highest to lowest prob, 3 decimal place rounded
         # then alphabetical
         # adapted from both bigram and unigram
-        self.trigram["MLE"] = self.trigram["prob"].apply(log2)
+        # fix sort alphabetically
         self.trigram.sort_index(inplace=True)
-        self.trigram.sort_values(by=['prob'], inplace=True, ascending=False)
+        self.trigram.sort_values(by=['MLE'], inplace=True, ascending=False)
         for index, row in self.trigram.iterrows():
     	    print(index, round(row['MLE'], 3))
 
@@ -125,5 +127,28 @@ class LanguageModel:
     def train(self, train_corpus):
         print('I am an unimplemented TRIGRAM train() method.')  # delete this!
 
-    def score(self, test_corpus):
+    def score_unk(self, sent): # Arshana
+        # keep as sentence, unk
+
+        pass
+
+    def score_prob(self, sent): # Anna
+        pass
+
+    def calc_perplex(self, sum, count): # Brynna
+        pass
+
+    def score(self, test_corpus): # Arshana
         print('I am an unimplemented TRIGRAM score() method.')  # delete this!
+
+    
+
+        # total_prob = 0
+        # num_sent = 0
+        # break test_corpus -> entire_file
+            # num_sent++
+            # print (line1)
+            # score_unk (line1) -> return unked sent
+            # score_prob(sent) -> return prob1
+            # total_prob += prob1
+        # calc_perplex(total_prob, num_sent)
