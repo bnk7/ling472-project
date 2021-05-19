@@ -97,10 +97,8 @@ class LanguageModel:
     # prints bigrams and their logged MLEs, rounded to 3 decimal places
     # and sorted by logged MLE (descending) and then bigram (alphabetical)
     def print_ngram(self): # Brynna
-        # fix sort alphabetically
-        self.bigram_df.sort_index(inplace = True)
-        # sort by loggedMLE
-        self.bigram_df.sort_values(['MLE'], ascending = False, inplace = True)
+        self.bigram_df.index.name = "index"
+        self.bigram_df.sort_values(by=['MLE', "index"], ascending = [False, True], inplace = True)
         # print
         for index, row in self.bigram_df.iterrows():
     	    print(index, round(row['MLE'], 3))

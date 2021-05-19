@@ -117,9 +117,8 @@ class LanguageModel:
         # highest to lowest prob, 3 decimal place rounded
         # then alphabetical
         # adapted from both bigram and unigram
-        # fix sort alphabetically
-        self.trigram.sort_index(inplace=True)
-        self.trigram.sort_values(by=['MLE'], inplace=True, ascending=False)
+        self.trigram.index.name = "index"
+        self.trigram.sort_values(by=['MLE', "index"], ascending = [False, True], inplace = True)
         for index, row in self.trigram.iterrows():
     	    print(index, round(row['MLE'], 3))
 
