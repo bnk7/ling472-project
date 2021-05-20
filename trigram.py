@@ -26,20 +26,18 @@ class LanguageModel:
         # extra start and stop token on first and last lines
         entire_file = "<s> " + entire_file
         # get rid of most punctuation
-        entire_file = re.sub(pattern=r'[^a-zA-Z0-9\s-]', repl="", string=entire_file)
+        entire_file = re.sub(pattern=r'[^a-zA-Z0-9\s]', repl="", string=entire_file)
         # add beginning and end of sentence tokens
         for line in entire_file:
             line = line.strip()
             line = "<s> " + line + " </s>"
-        # remove if -- doesn't mark the end of a sentence
-        entire_file = re.sub(pattern="--", repl="</s> <s>", string=entire_file)
 
         # unigram df - adapted from bigram.py
         entire_file = entire_file.split()
         for word in entire_file:
             if word in self.unigram.index:
                 self.unigram.loc[word, "cnt"] += 1
-            elif word != "<s>":
+            else:
                 row = pd.Series(data={"cnt": 1}, name=word)
                 self.unigram = self.unigram.append(row, ignore_index=False)
         # bigram df - adapted from bigram.py
@@ -63,7 +61,7 @@ class LanguageModel:
             else:
                 row = pd.Series(data={"cnt": 1, "word1": w1, "word2": w2, "word3": w3}, name=gram)
                 self.bigram = self.bigram.append(row, ignore_index=False)
-        pass
+            
 
     # changes tokens only seen once into <UNK> and updates all dataframes
     def train_unk(self): # Brynna
@@ -105,7 +103,7 @@ class LanguageModel:
         # folded smoothing into this method
         for index, row in self.trigram.iterrows():
             count = row['cnt'] + 1
-            denom = self.bigram.loc[row['word1'] + " " + row['word2'], "cnt"] + len(self.unigram.index)
+            denom = self.bigram.loc[row['word1'] + " " + row['word2'], "cnt"] + len(self.unigram.index) - 1
             self.trigram.loc[index, 'MLE'] = log2(float(count)/denom)
 
     def print_ngram(self): # Anna
