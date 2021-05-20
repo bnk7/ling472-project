@@ -92,9 +92,15 @@ class LanguageModel:
         self.print_ngram()
 
     def score_unk(self, sent): # Anna
-        # keep as sentence, unk
+        # I have not tested any of this code yet.
+        unked_sent = ""
+        for word in sent.split():
+            if word in self.df.index:
+                unked_sent += word + " "
+            else:
+                unked_sent += "<UNK> "
+        return unked_sent
 
-        pass
 
     def score_prob(self, sent): # Brynna
         pass
@@ -103,11 +109,30 @@ class LanguageModel:
         pass
 
     def score(self, test_corpus): # Anna
-        # move through sentences, pass one at a time
-        # use read_data
-        # sum probability variable
-        # count sentences variable
-        print('I am an unimplemented UNIGRAM score() method.')  # delete this!
+        """
+        Reads in the test corpus and prints each line with its logged probability
+        Prints out the perplexity of the system at the end. All rounded to the
+        third decimal place.
+        """
+        # I have not tested any of this code yet.
+        num_sent = 0
+        total_prob = 0
+        # read in data
+        f = open(test_corpus, 'r')
+        pattern = r'[^a-zA-Z0-9\s]'
+        lines = f.readlines()
+        f.close()
+        # per sentence w/ prob
+        for line in lines:
+            num_sent += 1
+            clean_line = re.sub(pattern=pattern, repl='', string=line)
+            unked_line = self.score_unk(clean_line)
+            prob = self.score_prob(unked_line)
+            total_prob += prob
+            print(line + " " + str(prob))
+        # System's perplexity
+        perplex = self.calc_perplex(total_prob, num_sent)
+        print("Perplexity = " + str(perplex))
 
         # total_prob = 0
         # num_sent = 0

@@ -17,9 +17,7 @@ class LanguageModel:
         for line in lines:
             line = line.strip()
             # get rid of most punctuation
-            line = re.sub(pattern=r" [^a-zA-Z0-9\s-]", repl="", string=line)
-            # remove if "--" doesn't mark the end of a sentence
-            line = re.sub(pattern="--", repl="</s> <s>", string=line)
+            line = re.sub(pattern=r" [^a-zA-Z0-9\s]", repl="", string=line)
             # add beginning and end of sentence tokens
             entire_file += "<s> " + line + " </s> "
         f.close()
@@ -29,7 +27,7 @@ class LanguageModel:
         for word in entire_file:
             if word in self.unigram_df.index:
                 self.unigram_df.loc[word, "cnt"] += 1
-            elif word != "<s>":
+            else:
                 row = pd.Series(data={"cnt": 1}, name=word)
                 self.unigram_df = self.unigram_df.append(row, ignore_index=False)
 
@@ -41,7 +39,7 @@ class LanguageModel:
             bigram = first_word + " " + second_word
             if bigram in self.bigram_df.index:
                 self.bigram_df.loc[bigram, "cnt"] += 1
-            elif second_word != "<s>":
+            else:
                 row = pd.Series(data={"cnt": 1, "w1": first_word, "w2": second_word}, name=bigram)
                 self.bigram_df = self.bigram_df.append(row, ignore_index=False)
 
@@ -89,7 +87,7 @@ class LanguageModel:
             # bigram count
             num = row['cnt'] + 1
             # w1 count + vocab count (no <s> already)
-            denom = self.unigram_df.loc[row['w1'], 'cnt'] + len(self.unigram_df.index)
+            denom = self.unigram_df.loc[row['w1'], 'cnt'] + len(self.unigram_df.index) - 1
             # prob: count / w1 count + vocab count
             # add column to bigram df
             self.bigram_df.loc[index, 'MLE'] = log2(float(num)/denom)
