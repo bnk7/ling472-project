@@ -122,7 +122,12 @@ class LanguageModel:
 
 
     def train(self, train_corpus):
-        print('I am an unimplemented TRIGRAM train() method.')  # delete this!
+        file = open(train_corpus, 'r')
+        self.read_data(file)
+        file.close()
+        self.train_unk()
+        self.train_prob()
+        self.print_ngram()
 
     def score_unk(self, sent): # Arshana
         # keep as sentence, unk
@@ -138,7 +143,7 @@ class LanguageModel:
     def score(self, test_corpus): # Arshana
         print('I am an unimplemented TRIGRAM score() method.')  # delete this!
 
-    
+
 
         # total_prob = 0
         # num_sent = 0
