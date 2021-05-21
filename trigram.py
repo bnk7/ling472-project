@@ -130,9 +130,14 @@ class LanguageModel:
         self.print_ngram()
 
     def score_unk(self, sent): # Arshana
-        # keep as sentence, unk
-
-        pass
+        # untested
+        unked_sent = ""
+        for w in sent.split():
+            if w in self.unigram.index:
+                unked_sent += w + " "
+            else
+                unked_sent += "<UNK> "
+        return unked_sent
 
     def score_prob(self, sent): # Anna
         pass
@@ -141,16 +146,23 @@ class LanguageModel:
         pass
 
     def score(self, test_corpus): # Arshana
-        print('I am an unimplemented TRIGRAM score() method.')  # delete this!
-
-
-
-        # total_prob = 0
-        # num_sent = 0
-        # break test_corpus -> entire_file
-            # num_sent++
-            # print (line1)
-            # score_unk (line1) -> return unked sent
-            # score_prob(sent) -> return prob1
-            # total_prob += prob1
-        # calc_perplex(total_prob, num_sent)
+        # untested
+        total_prob = 0
+        num_sent = 0
+        
+        # read in file
+        f = open(test_corpus, 'r')
+        lines = f.readlines()
+        f.close()
+        
+        # iterate through lines, outputting individual prob
+        for line in lines:
+            num_sent += 1
+            unked_line = score_unk (re.sub(pattern=r'[^a-zA-Z0-9\s]', repl="", string=line))
+            prob = score_prob(unked_line)
+            total_prob += prob
+            print(line + " " + str(prob))
+        
+        # determine perplexity
+        perp = self.calc_perplex(total_prob, num_sent)
+        print("Perplexity = " + str(perp))
