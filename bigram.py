@@ -17,7 +17,7 @@ class LanguageModel:
         for line in lines:
             line = line.strip()
             # get rid of most punctuation
-            line = re.sub(pattern=r" [^a-zA-Z0-9\s]", repl="", string=line)
+            line = re.sub(pattern=r"[^a-zA-Z0-9\s]", repl="", string=line)
             # add beginning and end of sentence tokens
             entire_file += "<s> " + line + " </s> "
         f.close()
