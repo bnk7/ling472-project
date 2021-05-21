@@ -52,7 +52,6 @@ class LanguageModel:
             else:
                 row = pd.Series(data={"cnt": 1}, name=word)
                 self.df = self.df.append(row, ignore_index=False)
-        print(self.df)
         f.close()
 
     def train_unk(self): # Arshana
@@ -106,7 +105,10 @@ class LanguageModel:
         pass
 
     def calc_perplex(self, sum, count): # Arshana
-        pass
+        #untested
+        # -1 for UNK token
+        H = (float)sum / (len(self.df.index) - 1) * -1
+        return round(2 ** H, 3)
 
     def score(self, test_corpus): # Anna
         """
