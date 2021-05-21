@@ -135,7 +135,7 @@ class LanguageModel:
         for w in sent.split():
             if w in self.unigram.index:
                 unked_sent += w + " "
-            else
+            else:
                 unked_sent += "<UNK> "
         return unked_sent
 
