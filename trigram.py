@@ -60,7 +60,7 @@ class LanguageModel:
                 self.trigram.loc[gram, "cnt"] += 1
             else:
                 row = pd.Series(data={"cnt": 1, "word1": w1, "word2": w2, "word3": w3}, name=gram)
-                self.bigram = self.bigram.append(row, ignore_index=False)
+                self.trigram = self.trigram.append(row, ignore_index=False)
 
 
     # changes tokens only seen once into <UNK> and updates all dataframes
@@ -149,12 +149,12 @@ class LanguageModel:
         # untested
         total_prob = 0
         num_sent = 0
-        
+
         # read in file
         f = open(test_corpus, 'r')
         lines = f.readlines()
         f.close()
-        
+
         # iterate through lines, outputting individual prob
         for line in lines:
             num_sent += 1
@@ -162,7 +162,7 @@ class LanguageModel:
             prob = score_prob(unked_line)
             total_prob += prob
             print(line + " " + str(prob))
-        
+
         # determine perplexity
         perp = self.calc_perplex(total_prob, num_sent)
         print("Perplexity = " + str(perp))
