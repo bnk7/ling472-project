@@ -61,7 +61,7 @@ class LanguageModel:
             else:
                 row = pd.Series(data={"cnt": 1, "word1": w1, "word2": w2, "word3": w3}, name=gram)
                 self.bigram = self.bigram.append(row, ignore_index=False)
-            
+
 
     # changes tokens only seen once into <UNK> and updates all dataframes
     def train_unk(self): # Brynna
@@ -80,7 +80,7 @@ class LanguageModel:
             w1, w2 = tup
             row = pd.Series(data=[w1, w2, self.bigram.loc[w1, w2]["cnt"]], name=w1 + " " + w2)
             unked_bigram = unked_bigram.append(row, ignore_index=False)
-            unked_bigram.columns = ["word1", "word2", "cnt"]
+        unked_bigram.columns = ["word1", "word2", "cnt"]
         unked_bigram["cnt"] = unked_bigram.cnt.apply(int)
         self.bigram = unked_bigram
 
@@ -93,7 +93,7 @@ class LanguageModel:
             row = pd.Series(data=[w1, w2, w3, self.trigram.loc[w1, w2, w3]["cnt"]], \
                 name=w1 + " " + w2 + " " + w3)
             unked_trigram = unked_trigram.append(row, ignore_index=False)
-            unked_trigram.columns = ["word1", "word2", "word3", "cnt"]
+        unked_trigram.columns = ["word1", "word2", "word3", "cnt"]
         unked_trigram["cnt"] = unked_trigram.cnt.apply(int)
         self.trigram = unked_trigram
 
