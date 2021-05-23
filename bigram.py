@@ -92,8 +92,8 @@ class LanguageModel:
             # add column to bigram df
             self.bigram_df.loc[index, 'MLE'] = log2(float(num)/denom)
 
-    # prints bigrams and their logged MLEs, rounded to 3 decimal places
-    # and sorted by logged MLE (descending) and then bigram (alphabetical)
+    # prints bigrams and their MLEs, rounded to 3 decimal places
+    # and sorted by MLE (descending) and then bigram (alphabetical)
     def print_ngram(self): # Brynna
         self.bigram_df.index.name = "index"
         self.bigram_df.sort_values(by=['MLE', "index"], ascending = [False, True], inplace = True)
@@ -107,10 +107,16 @@ class LanguageModel:
         self.train_prob()
         self.print_ngram()
 
+    # returns an UNKed sentence
     def score_unk(self, sent): # Brynna
-        # keep as sentence, unk
-
-        pass
+        sent_list = sent.split()
+        i = 0
+        for word in sent_list:
+            if word not in unigram_df.index:
+                sent_list[i] = "<UNK>"
+            i += 1
+        # re-form the sentence and return
+        return(" ".join(sent_list))
 
     def score_prob(self, sent): # Arshana
         pass
@@ -119,12 +125,15 @@ class LanguageModel:
         pass
 
     def score(self, test_corpus): # Brynna
-        print('I am an unimplemented BIGRAM score() method.')  # delete this!
+        # read in file
+        f = open(test_corpus, 'r')
+        lines = f.readlines()
+        f.close()
 
-        # total_prob = 0
-        # num_sent = 0
+        total_prob = 0
+        num_sent = len(lines)
         # break test_corpus -> entire_file
-            # num_sent++
+            # num_sent+=1
             # print (line1)
             # score_unk (line1) -> return unked sent
                 # add start and stop tokens

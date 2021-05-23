@@ -166,7 +166,7 @@ class LanguageModel:
         # iterate through lines, outputting individual prob
         for line in lines:
             num_sent += 1
-            unked_line = score_unk (re.sub(pattern=r'[^a-zA-Z0-9\s]', repl="", string=line))
+            unked_line = score_unk(re.sub(pattern=r'[^a-zA-Z0-9\s]', repl="", string=line))
             prob = score_prob(unked_line)
             total_prob += prob
             print(line + " " + str(prob))
