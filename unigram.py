@@ -146,4 +146,3 @@ class LanguageModel:
             # score_prob(sent) -> return prob1
             # total_prob += prob1
         # calc_perplex(total_prob, num_sent)
-
