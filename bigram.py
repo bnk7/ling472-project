@@ -122,7 +122,9 @@ class LanguageModel:
         pass
 
     def calc_perplex(self, sum, count): # Anna
-        pass
+        # not tested
+        H = -sum/count
+        return round(2 ** H, 3)
 
     def score(self, test_corpus): # Brynna
         # read in file

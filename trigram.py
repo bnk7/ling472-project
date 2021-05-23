@@ -22,15 +22,16 @@ class LanguageModel:
                 # create unigram indices
                 # add count column and increment as appropriate
         # adapt code from bigram.py
-        entire_file = corpus.read()
+        entire_file1 = corpus.read()
         # extra start and stop token on first and last lines
-        entire_file = "<s> " + entire_file
         # get rid of most punctuation
-        entire_file = re.sub(pattern=r'[^a-zA-Z0-9\s]', repl="", string=entire_file)
+        entire_file1 = re.sub(pattern=r'[^a-zA-Z0-9\s]', repl="", string=entire_file1)
+        entire_file1 = "<s> " + entire_file1
         # add beginning and end of sentence tokens
-        for line in entire_file:
+        entire_file = ""
+        for line in entire_file1:
             line = line.strip()
-            line = "<s> " + line + " </s>"
+            entire_file += "<s> " + line + " </s>"
 
         # unigram df - adapted from bigram.py
         entire_file = entire_file.split()
