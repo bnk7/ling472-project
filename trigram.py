@@ -143,13 +143,13 @@ class LanguageModel:
 
     def score_prob(self, sent): # Anna
         # not tested
-        prob = 1
+        prob = 0
         sent_list = sent.split()
         for i in range[:len(sent_list)]:
             if (i + 2) < sent_list:
                 index = sent_list[i] + " " + sent_list[i+1] + " " + sent_list[i+2]
                 MLE = self.trigram.loc[index, 'MLE']
-                prob *= MLE
+                prob += MLE
         return prob
 
     def calc_perplex(self, sum, N): # Brynna
