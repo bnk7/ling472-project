@@ -31,7 +31,7 @@ class LanguageModel:
         entire_file = ""
         for line in entire_file1:
             line = line.strip()
-            entire_file += "<s> " + line + " </s>"
+            entire_file += "<s> " + line + " </s> "
 
         # unigram df - adapted from bigram.py
         entire_file = entire_file.split()
