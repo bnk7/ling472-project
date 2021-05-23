@@ -132,8 +132,10 @@ class LanguageModel:
     def score_prob(self, sent): # Arshana
         pass
 
-    def calc_perplex(self, sum, N): # Anna
-        pass
+    def calc_perplex(self, sum, count): # Anna
+        # not tested
+        H = -sum/count
+        return round(2 ** H, 3)
 
     # takes a line, unks it, prints it and its probability, and returns the probability
     def score_line(self, line): # Brynna
