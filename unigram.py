@@ -126,32 +126,29 @@ class LanguageModel:
         third decimal place.
         """
         # I have not tested any of this code yet.
-        num_sent = 0
         total_prob = 0
+        pattern = r'[^a-zA-Z0-9\s]'
         # read in data
         f = open(test_corpus, 'r')
-        pattern = r'[^a-zA-Z0-9\s]'
         lines = f.readlines()
         f.close()
         # per sentence w/ prob
         for line in lines:
-            num_sent += 1
             clean_line = re.sub(pattern=pattern, repl='', string=line)
             unked_line = self.score_unk(clean_line)
             prob = self.score_prob(unked_line)
             total_prob += prob
             print(line + " " + str(prob))
         # System's perplexity
-        perplex = self.calc_perplex(total_prob, num_sent)
+        num_words = self.df['cnt'].sum()
+        perplex = self.calc_perplex(total_prob, num_words)
         print("Perplexity = " + str(perplex))
 
         # total_prob = 0
-        # num_sent = 0
         # break test_corpus -> entire_file
-            # num_sent++
             # print (line1)
             # score_unk (line1) -> return unked sent
                 # add start and stop tokens
             # score_prob(sent) -> return prob1
             # total_prob += prob1
-        # calc_perplex(total_prob, num_sent)
+        # calc_perplex(total_prob, num_words)
