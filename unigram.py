@@ -100,9 +100,18 @@ class LanguageModel:
                 unked_sent += "<UNK> "
         return unked_sent
 
-
+    # returns the probability of a sentence
     def score_prob(self, sent): # Brynna
-        pass
+        # remove start token
+        sent = re.sub(pattern='<s> ', repl='', string=sent)
+        # start with 0 because we're adding
+        prob = 0
+        sent_list = sent.split()
+        for word in sent_list:
+            MLE = self.df.loc[word, 'MLE']
+            # adding logs is equivalent to multiplying normal numbers
+            prob += MLE
+        return(prob)
 
     def calc_perplex(self, sum, count): # Arshana
         #untested

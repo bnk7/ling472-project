@@ -150,8 +150,9 @@ class LanguageModel:
                 prob *= MLE
         return prob
 
-    def calc_perplex(self, sum, count): # Brynna
-        pass
+    def calc_perplex(self, sum, N): # Brynna
+        H = (-1/float(N)) * sum
+        return(round(2 ** H, 3))
 
     def score(self, test_corpus): # Arshana
         # untested
