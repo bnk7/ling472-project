@@ -107,8 +107,19 @@ class LanguageModel:
         self.train_prob()
         self.print_ngram()
 
-    # returns an UNKed sentence
+    # removes punctuation and adds stop tokens
+    # adds start tokens if passed True
+    def normalize_line(self, line, start_token): # Brynna
+        line = re.sub(pattern=r"[^a-zA-Z0-9\s]", repl="", string=line)
+        line = line.strip()
+        line = line + " </s>"
+        if start_token == True:
+            line = "<s> " + line
+        return(line)
+
+    # returns an UNKed sentence with start and end tokens
     def score_unk(self, sent): # Brynna
+        sent = self.normalize_line(sent, True)
         sent_list = sent.split()
         i = 0
         for word in sent_list:
@@ -126,19 +137,28 @@ class LanguageModel:
         H = -sum/count
         return round(2 ** H, 3)
 
+    # takes a line, unks it, prints it and its probability, and returns the probability
+    def score_line(self, line): # Brynna
+        unked_line = self.score_unk(line)
+        prob = self.score_prob(unked_line)
+        print(line.strip() + " " + str(prob))
+        return(prob)
+
     def score(self, test_corpus): # Brynna
         # read in file
         f = open(test_corpus, 'r')
         lines = f.readlines()
         f.close()
 
-        total_prob = 0
-        num_sent = len(lines)
-        # break test_corpus -> entire_file
-            # num_sent+=1
-            # print (line1)
-            # score_unk (line1) -> return unked sent
-                # add start and stop tokens
-            # score_prob(sent) -> return prob1
-            # total_prob += prob1
-        # calc_perplex(total_prob, num_sent)
+        # hopefully this is more efficient than a for-loop
+        lines_series = pd.Series(lines, dtype = "string")
+        total_prob = lines_series.apply(self.score_line).sum()
+
+        # calculate N = total words (including the stop but not the start tokens)
+        normalized_lines = lines_series.apply(normalize_line, False)
+        entire_file = " ".join(normalized_lines)
+        N = len(entire_file.split())
+
+        # print perplexity
+        perplexity = calc_perplex(total_prob, N)
+        print("Perplexity = " + str(round(perplexity, 3)))
