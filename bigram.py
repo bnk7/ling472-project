@@ -130,7 +130,15 @@ class LanguageModel:
         return(" ".join(sent_list))
 
     def score_prob(self, sent): # Arshana
-        pass
+        # not tested
+        # adapted from trigram
+        prob = 0
+        sent_list = sent.split();
+        for i in range[:len(sent_list)]:
+            if (i + 1) < sent_list:
+                idx = sent_list[i] + " " + sent_list[i+1]
+                prob += self.bigram_df[idx, 'MLE']
+        return prob
 
     def calc_perplex(self, sum, count): # Anna
         # not tested
