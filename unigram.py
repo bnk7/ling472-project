@@ -91,7 +91,10 @@ class LanguageModel:
         self.print_ngram()
 
     def score_unk(self, sent): # Anna
-        # I have not tested any of this code yet.
+        """
+        takes in a string sentence with no punctuation
+        returns the unked string
+        """
         unked_sent = ""
         for word in sent.split():
             if word in self.df.index:
