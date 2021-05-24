@@ -159,6 +159,7 @@ class LanguageModel:
     def score(self, test_corpus): # Arshana
         # untested
         total_prob = 0
+        num_words = 0
 
         # read in file
         f = open(test_corpus, 'r')
@@ -168,11 +169,18 @@ class LanguageModel:
         # iterate through lines, outputting individual prob
         for line in lines:
             unked_line = score_unk(re.sub(pattern=r'[^a-zA-Z0-9\s]', repl="", string=line))
-            prob = score_prob(unked_line)
+            
+            if num_words == 0:
+                prob_line = "<s> <s> " + unked_line + " </s>"
+            else:
+                prob_line = "<s> " + unked_line + " </s>"
+                
+            num_words += len(unked_line.split())
+
+            prob = score_prob(prob_line)
             total_prob += prob
-            print(line + " " + str(prob))
+            print(line.strip() + " " + str(prob))
 
         # determine perplexity
-        num_words = self.unigram['cnt'].sum()
         perp = self.calc_perplex(total_prob, num_words)
         print("Perplexity = " + str(perp))

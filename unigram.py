@@ -118,8 +118,7 @@ class LanguageModel:
 
     def calc_perplex(self, sum, count): # Arshana
         #untested
-        # -1 for UNK token
-        H = (float)sum / (len(self.df.index) - 1) * -1
+        H = -sum / count
         return round(2 ** H, 3)
 
     def score(self, test_corpus): # Anna
