@@ -129,6 +129,7 @@ class LanguageModel:
         """
         # I have not tested any of this code yet.
         total_prob = 0
+        num_words = 0
         pattern = r'[^a-zA-Z0-9\s]'
         # read in data
         f = open(test_corpus, 'r')
@@ -137,12 +138,12 @@ class LanguageModel:
         # per sentence w/ prob
         for line in lines:
             clean_line = re.sub(pattern=pattern, repl='', string=line)
+            num_words += len(clean_line.split())
             unked_line = self.score_unk(clean_line)
             prob = self.score_prob(unked_line)
             total_prob += prob
             print(line + " " + str(prob))
         # System's perplexity
-        num_words = self.df['cnt'].sum()
         perplex = self.calc_perplex(total_prob, num_words)
         print("Perplexity = " + str(perplex))
 
