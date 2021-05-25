@@ -175,7 +175,8 @@ class LanguageModel:
             else:
                 prob_line = "<s> " + unked_line + " </s>"
                 
-            num_words += len(unked_line.split())
+            # +1 for </s>
+            num_words += len(unked_line.split()) + 1
 
             prob = score_prob(prob_line)
             total_prob += prob
