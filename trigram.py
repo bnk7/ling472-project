@@ -167,18 +167,21 @@ class LanguageModel:
         f.close()
 
         # iterate through lines, outputting individual prob
-        for line in lines:
-            unked_line = score_unk(re.sub(pattern=r'[^a-zA-Z0-9\s]', repl="", string=line))
+        for i in range[:len(lines)]:
+            line = lines(i)
+            unked_line = self.score_unk(re.sub(pattern=r'[^a-zA-Z0-9\s]', repl="", string=line))
             
-            if num_words == 0:
+            if i == 0:
                 prob_line = "<s> <s> " + unked_line + " </s>"
             else:
-                prob_line = "<s> " + unked_line + " </s>"
-                
+                prob_line = "</s> <s> " + unked_line + " </s>"
+            if i != len(lines) - 1:
+                prob_line += " <s>"
+            
             # +1 for </s>
             num_words += len(unked_line.split()) + 1
 
-            prob = score_prob(prob_line)
+            prob = self.score_prob(prob_line)
             total_prob += prob
             print(line.strip() + " " + str(prob))
 
