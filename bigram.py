@@ -115,7 +115,7 @@ class LanguageModel:
         line = line + " </s>"
         if start_token == True:
             line = "<s> " + line
-        return(line)
+        return line
 
     # returns an UNKed sentence with start and end tokens
     def score_unk(self, sent): # Brynna
@@ -123,17 +123,17 @@ class LanguageModel:
         sent_list = sent.split()
         i = 0
         for word in sent_list:
-            if word not in unigram_df.index:
+            if word not in self.unigram_df.index:
                 sent_list[i] = "<UNK>"
             i += 1
         # re-form the sentence and return
-        return(" ".join(sent_list))
+        return " ".join(sent_list)
 
     def score_prob(self, sent): # Arshana
         # not tested
         # adapted from trigram
         prob = 0
-        sent_list = sent.split();
+        sent_list = sent.split()
         for i in range[:len(sent_list)]:
             if (i + 1) < sent_list:
                 idx = sent_list[i] + " " + sent_list[i+1]
@@ -150,7 +150,7 @@ class LanguageModel:
         unked_line = self.score_unk(line)
         prob = self.score_prob(unked_line)
         print(line.strip() + " " + str(prob))
-        return(prob)
+        return prob
 
     def score(self, test_corpus): # Brynna
         # read in file
@@ -163,10 +163,10 @@ class LanguageModel:
         total_prob = lines_series.apply(self.score_line).sum()
 
         # calculate N = total words (including the stop but not the start tokens)
-        normalized_lines = lines_series.apply(normalize_line, False)
+        normalized_lines = lines_series.apply(self.normalize_line, False)
         entire_file = " ".join(normalized_lines)
         N = len(entire_file.split())
 
         # print perplexity
-        perplexity = calc_perplex(total_prob, N)
+        perplexity = self.calc_perplex(total_prob, N)
         print("Perplexity = " + str(round(perplexity, 3)))

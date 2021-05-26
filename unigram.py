@@ -105,8 +105,6 @@ class LanguageModel:
 
     # returns the probability of a sentence
     def score_prob(self, sent): # Brynna
-        # remove start token
-        sent = re.sub(pattern='<s> ', repl='', string=sent)
         # start with 0 because we're adding
         prob = 0
         sent_list = sent.split()
@@ -114,7 +112,7 @@ class LanguageModel:
             MLE = self.df.loc[word, 'MLE']
             # adding logs is equivalent to multiplying normal numbers
             prob += MLE
-        return(prob)
+        return prob
 
     def calc_perplex(self, sum, count): # Arshana
         #untested
@@ -142,7 +140,7 @@ class LanguageModel:
             unked_line = self.score_unk(clean_line)
             prob = self.score_prob(unked_line)
             total_prob += prob
-            print(line + " " + str(prob))
+            print(line.strip() + " " + str(prob))
         # System's perplexity
         perplex = self.calc_perplex(total_prob, num_words)
         print("Perplexity = " + str(perplex))
