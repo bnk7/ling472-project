@@ -115,7 +115,8 @@ class LanguageModel:
 
     # removes punctuation and adds stop tokens
     # adds start tokens if passed True
-    def normalize_line(self, line, start_token): # Brynna
+    # start tokens assumes False if no parameter passed
+    def normalize_line(self, line, start_token=False): # Brynna
         line = re.sub(pattern=r"[^a-zA-Z0-9\s]", repl="", string=line)
         line = line.strip()
         line = line + " </s>"
@@ -140,10 +141,10 @@ class LanguageModel:
         # adapted from trigram
         prob = 0
         sent_list = sent.split()
-        for i in range[:len(sent_list)]:
-            if (i + 1) < sent_list:
+        for i in range(len(sent_list)):
+            if (i + 1) < len(sent_list):
                 idx = sent_list[i] + " " + sent_list[i+1]
-                prob += self.bigram_df[idx, 'MLE']
+                prob += self.bigram_df.loc[idx, 'MLE']
         return prob
 
     def calc_perplex(self, sum, count): # Anna
@@ -169,7 +170,7 @@ class LanguageModel:
         total_prob = lines_series.apply(self.score_line).sum()
 
         # calculate N = total words (including the stop but not the start tokens)
-        normalized_lines = lines_series.apply(self.normalize_line, False)
+        normalized_lines = lines_series.apply(self.normalize_line)
         entire_file = " ".join(normalized_lines)
         N = len(entire_file.split())
 
