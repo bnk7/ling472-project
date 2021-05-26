@@ -3,30 +3,16 @@
 import pandas as pd
 import re
 from math import log2
+from pathlib import Path
 
 """
-read in data: one function
-    split whitespace, or regex with no punctuation
-    store in pandas, dataframe or series
-    word as index
-
-<UNK>: when word appears once
-
-
-Smoothing to calculate the probabilities, add column to dataframe
-
-
-print n-gram, MLE, add column to dataframe
-
-score:
-
-store the sum of probabilities for perplexity, but print probabilities as we go along
-
-<unk> unseen words
-
-probability for each sentence
-
-Perplexity, sum each log probability for each sentence
+1. save probabilties into csv and read them in train if they exist
+2. Generate sentences for trigram
+    randomize top 3 probabilities
+    randomize for the first trigram with start token </s> <s> word or <s> <s> word
+    print(1 if trigram runs well, 5 if bad)
+3. Error analysis on 5 sentences each
+4. Write-up
 
 """
 
@@ -85,10 +71,16 @@ class LanguageModel:
             print(index, round(row['MLE'], 3))
 
     def train(self, train_corpus):
-        self.read_data(train_corpus)
-        self.train_unk()
-        self.train_prob()
+        filename = "unigram_df.csv"
+        if Path(filename).exists():
+            self.df = pd.read_csv(filename, index_col=0)
+        else:
+            self.read_data(train_corpus)
+            self.train_unk()
+            self.train_prob()
+            self.df.to_csv(filename)
         self.print_ngram()
+
 
     def score_unk(self, sent): # Anna
         """

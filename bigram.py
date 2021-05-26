@@ -3,6 +3,7 @@
 from math import log2
 import pandas as pd
 import re
+from pathlib import Path
 
 class LanguageModel:
 
@@ -102,9 +103,14 @@ class LanguageModel:
     	    print(index, round(row['MLE'], 3))
 
     def train(self, train_corpus):
-        self.read_data(train_corpus)
-        self.train_unk()
-        self.train_prob()
+        filename = "bigram_df.csv"
+        if Path(filename).exists():
+            self.bigram_df = pd.read_csv(filename, index_col=0)
+        else:
+            self.read_data(train_corpus)
+            self.train_unk()
+            self.train_prob()
+            self.bigram_df.to_csv(filename)
         self.print_ngram()
 
     # removes punctuation and adds stop tokens

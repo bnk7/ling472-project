@@ -1,7 +1,21 @@
 from math import log2
+from numpy import tri
 import pandas as pd
 import re
+import random
+from pathlib import Path
 # !/usr/bin/python3
+
+"""
+1. save probabilties into csv and read them in train if they exist
+2. Generate sentences for trigram
+    randomize top 3 probabilities
+    randomize for the first trigram with start token </s> <s> word or <s> <s> word
+    print(1 if trigram runs well, 5 if bad)
+3. Error analysis on 5 sentences each
+4. Write-up
+
+"""
 
 class LanguageModel:
 
@@ -124,12 +138,18 @@ class LanguageModel:
 
 
     def train(self, train_corpus):
-        file = open(train_corpus, 'r')
-        self.read_data(file)
-        file.close()
-        self.train_unk()
-        self.train_prob()
+        filename = "trigram_df.csv"
+        if Path(filename).exists():
+            self.trigram = pd.read_csv(filename, index_col=0)
+        else:
+            file = open(train_corpus, 'r')
+            self.read_data(file)
+            file.close()
+            self.train_unk()
+            self.train_prob()
+            self.trigram.to_csv(filename)
         self.print_ngram()
+
 
     def score_unk(self, sent): # Arshana
         # untested
@@ -153,8 +173,8 @@ class LanguageModel:
         return prob
 
     def calc_perplex(self, sum, N): # Brynna
-        H = (-1/float(N)) * sum
-        return(round(2 ** H, 3))
+        H = (-1/N) * sum
+        return round(2 ** H, 3)
 
     def score(self, test_corpus): # Arshana
         # untested
@@ -188,3 +208,26 @@ class LanguageModel:
         # determine perplexity
         perp = self.calc_perplex(total_prob, num_words)
         print("Perplexity = " + str(perp))
+
+
+    def generate(self):
+        # randomize for the first trigram with start token </s> <s> word or <s> <s> word
+        # randomize top 3 probabilities
+        # until it hits a stop token
+        # print with no start/stop, add period
+        start = self.trigram[self.trigram.word2 == "<s>"]
+        start_index = random.choices(start.index, 1)
+        sent_list = ["<s>"]
+        word = start.at[start_index[0], "word3"]
+        sent_list.append(word)
+        i = 1
+        while word != "</s>":
+            first = sent_list[i-1]
+            trigrams = self.trigram[(self.trigram.word1 == first) and self.trigram.word2 == word]
+            top_3 = trigrams.nlargest(3, "MLE")
+            word = random.choices(top_3.word3, 1)[0]
+            sent_list.append(word)
+            i += 1
+        sent = " ".join(sent_list[1:len(sent_list)-1]) + "."
+        print(sent)
+
