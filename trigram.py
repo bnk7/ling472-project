@@ -165,8 +165,8 @@ class LanguageModel:
         # not tested
         prob = 0
         sent_list = sent.split()
-        for i in range[:len(sent_list)]:
-            if (i + 2) < sent_list:
+        for i in range(len(sent_list)):
+            if (i + 2) < len(sent_list):
                 index = sent_list[i] + " " + sent_list[i+1] + " " + sent_list[i+2]
                 MLE = self.trigram.loc[index, 'MLE']
                 prob += MLE
@@ -187,8 +187,8 @@ class LanguageModel:
         f.close()
 
         # iterate through lines, outputting individual prob
-        for i in range[:len(lines)]:
-            line = lines(i)
+        for i in range(len(lines)):
+            line = lines[i]
             unked_line = self.score_unk(re.sub(pattern=r'[^a-zA-Z0-9\s]', repl="", string=line))
             
             if i == 0:
