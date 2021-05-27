@@ -138,16 +138,22 @@ class LanguageModel:
 
 
     def train(self, train_corpus):
-        filename = "trigram_df.csv"
-        if Path(filename).exists():
-            self.trigram = pd.read_csv(filename, index_col=0)
+        filename1 = "trigram_df.csv"
+        filename2 = "trigram_bi_df.csv"
+        filename3 = "trigram_uni_df.csv"
+        if Path(filename1).exists() and Path(filename2).exists() and Path(filename3).exists():
+            self.trigram = pd.read_csv(filename1, index_col=0)
+            self.bigram = pd.read_csv(filename2, index_col=0)
+            self.unigram = pd.read_csv(filename3, index_col=0)
         else:
             file = open(train_corpus, 'r')
             self.read_data(file)
             file.close()
             self.train_unk()
             self.train_prob()
-            self.trigram.to_csv(filename)
+            self.trigram.to_csv(filename1)
+            self.bigram.to_csv(filename2)
+            self.unigram.to_csv(filename3)
         self.print_ngram()
 
 
@@ -167,8 +173,17 @@ class LanguageModel:
         sent_list = sent.split()
         for i in range(len(sent_list)):
             if (i + 2) < len(sent_list):
-                index = sent_list[i] + " " + sent_list[i+1] + " " + sent_list[i+2]
-                MLE = self.trigram.loc[index, 'MLE']
+                bi_index = sent_list[i] + " " + sent_list[i+1]
+                index = bi_index + " " + sent_list[i+2]
+                MLE = 0
+                if index in self.trigram.index:
+                    MLE = self.trigram.loc[index, 'MLE']
+                elif bi_index in self.bigram.index:
+                    denom = self.bigram.loc[bi_index, "cnt"] + len(self.unigram.index) - 1
+                    MLE = log2(1.0/denom)
+                else:
+                    denom = len(self.unigram.index) - 1
+                    MLE = log2(1.0/denom)
                 prob += MLE
         return prob
 
