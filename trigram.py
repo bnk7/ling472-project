@@ -182,7 +182,7 @@ class LanguageModel:
                     denom = self.bigram.loc[bi_index, "cnt"] + len(self.unigram.index) - 1
                     MLE = log2(1.0/denom)
                 else:
-                    denom = len(self.unigram.index) 
+                    denom = len(self.unigram.index) - 1
                     MLE = log2(1.0/denom)
                 prob += MLE
         return prob
