@@ -231,8 +231,8 @@ class LanguageModel:
         # until it hits a stop token
         # print with no start/stop, add period
 
-        # df with all word2 as <s>
-        start = self.trigram[self.trigram.word2 == "<s>"]
+        # df with all word2 as <s>, ignore UNK
+        start = self.trigram[(self.trigram.word2 == "<s>") & (self.trigram.word3 != "<UNK>")]
         # randomize for one row
         start_row = start.sample()
         sent_list = ["<s>"]
@@ -243,8 +243,8 @@ class LanguageModel:
         i = 1
         while word != "</s>":
             first = sent_list[i-1]
-            # df with all word1 as first and word2 as word
-            trigrams = self.trigram[(self.trigram.word1 == first) & (self.trigram.word2 == word)]
+            # df with all word1 as first and word2 as word, ignore UNK
+            trigrams = self.trigram[(self.trigram.word1 == first) & (self.trigram.word2 == word) & (self.trigram.word3 != "<UNK>")]
             # finds rows of top 3 prob
             top_3 = trigrams.nlargest(3, "MLE")
             # randomizes for one row and retrieves word3, appending to sentence list
