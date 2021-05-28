@@ -101,7 +101,14 @@ class LanguageModel:
         prob = 0
         sent_list = sent.split()
         for word in sent_list:
-            MLE = self.df.loc[word, 'MLE']
+            if word in self.df.index:
+                MLE = self.df.loc[word, 'MLE']
+            else:
+                # P = (1)/(sum of all counts + size of vocab)
+                num_tokens = self.df.cnt.sum()
+                num_types = self.df.shape[0]
+                denom = num_tokens + num_types
+                MLE = log2(1.0/denom)
             # adding logs is equivalent to multiplying normal numbers
             prob += MLE
         return prob
