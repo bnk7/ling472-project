@@ -143,8 +143,17 @@ class LanguageModel:
         sent_list = sent.split()
         for i in range(len(sent_list)):
             if (i + 1) < len(sent_list):
-                idx = sent_list[i] + " " + sent_list[i+1]
-                prob += self.bigram_df.loc[idx, 'MLE']
+                uni_idx = sent_list[i]
+                idx = uni_idx + " " + sent_list[i+1]
+                if idx in self.bigram_df.index:
+                    MLE = self.bigram_df.loc[idx, 'MLE']
+                elif uni_idx in self.unigram_df.index:
+                    denom = self.unigram_df.loc[uni_idx, 'cnt'] + len(self.unigram_df.index) - 1
+                    MLE = log2(1.0/denom)
+                else:
+                    denom = len(self.unigram.index) - 1
+                    MLE = log2(1.0/denom)
+                prob += MLE
         return prob
 
     def calc_perplex(self, sum, count): # Anna
