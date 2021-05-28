@@ -231,16 +231,16 @@ class LanguageModel:
         # until it hits a stop token
         # print with no start/stop, add period
         start = self.trigram[self.trigram.word2 == "<s>"]
-        start_index = random.choices(start.index, 1)
+        start_row = start.sample()
         sent_list = ["<s>"]
-        word = start.at[start_index[0], "word3"]
+        word = start_row.word3.iloc[0]
         sent_list.append(word)
         i = 1
         while word != "</s>":
             first = sent_list[i-1]
-            trigrams = self.trigram[(self.trigram.word1 == first) and self.trigram.word2 == word]
+            trigrams = self.trigram.loc[(self.trigram.word1 == first) & self.trigram.word2 == word]
             top_3 = trigrams.nlargest(3, "MLE")
-            word = random.choices(top_3.word3, 1)[0]
+            word = top_3.sample().word3.iloc[0]
             sent_list.append(word)
             i += 1
         sent = " ".join(sent_list[1:len(sent_list)-1]) + "."
