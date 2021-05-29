@@ -205,14 +205,14 @@ class LanguageModel:
         for i in range(len(lines)):
             line = lines[i]
             unked_line = self.score_unk(re.sub(pattern=r'[^a-zA-Z0-9\s]', repl="", string=line))
-            
+
             if i == 0:
                 prob_line = "<s> <s> " + unked_line + " </s>"
             else:
                 prob_line = "</s> <s> " + unked_line + " </s>"
             if i != len(lines) - 1:
                 prob_line += " <s>"
-            
+
             # +1 for </s>
             num_words += len(unked_line.split()) + 1
 
@@ -231,26 +231,35 @@ class LanguageModel:
         # until it hits a stop token
         # print with no start/stop, add period
 
-        # df with all word2 as <s>, ignore UNK
-        start = self.trigram[(self.trigram.word2 == "<s>") & (self.trigram.word3 != "<UNK>")]
-        # randomize for one row
-        start_row = start.sample()
-        sent_list = ["<s>"]
-        # retrieve word3 and add to sentence list
-        word = start_row.word3.iloc[0]
-        sent_list.append(word)
-        # keep track of index in sentence list
-        i = 1
-        while word != "</s>":
-            first = sent_list[i-1]
-            # df with all word1 as first and word2 as word, ignore UNK
-            trigrams = self.trigram[(self.trigram.word1 == first) & (self.trigram.word2 == word) & (self.trigram.word3 != "<UNK>")]
-            # finds rows of top 3 prob
-            top_3 = trigrams.nlargest(3, "MLE")
-            # randomizes for one row and retrieves word3, appending to sentence list
-            word = top_3.sample().word3.iloc[0]
+        # loop until creation of a valid sentence
+        start_new_sentence = True
+        while start_new_sentence:
+            # change boolean to indicate we are now continuing an existing sentence
+            start_new_sentence = False
+            # df with all word2 as <s>, ignore UNK
+            start = self.trigram[(self.trigram.word2 == "<s>") & (self.trigram.word3 != "<UNK>")]
+            # randomize for one row
+            start_row = start.sample()
+            sent_list = ["<s>"]
+            # retrieve word3 and add to sentence list
+            word = start_row.word3.iloc[0]
             sent_list.append(word)
-            i += 1
+            # keep track of index in sentence list
+            i = 1
+
+            while word != "</s>" and not start_new_sentence:
+                first = sent_list[i-1]
+                # df with all word1 as first and word2 as word, ignore UNK
+                trigrams = self.trigram[(self.trigram.word1 == first) & (self.trigram.word2 == word) & (self.trigram.word3 != "<UNK>")]
+                # if trigrams is empty, we need to start over
+                start_new_sentence = trigrams.index.size == 0
+                # if trigrams isn't empty, add the next word
+                if not start_new_sentence:
+                    # finds rows of top 3 prob
+                    top_3 = trigrams.nlargest(3, "MLE")
+                    # randomizes for one row and retrieves word3, appending to sentence list
+                    word = top_3.sample().word3.iloc[0]
+                    sent_list.append(word)
+                i += 1
         sent = " ".join(sent_list[1:len(sent_list)-1]) + "."
         print(sent)
-
