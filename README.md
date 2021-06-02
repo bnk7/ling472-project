@@ -1,5 +1,19 @@
 # Contributors: Anna Batra, Arshana Jain, Brynna Kilcline
 
+## Instructions:
+
+**Training:** `python main.py <training data path> -n <n-gram size>`
+
+`<n-gram size>` is 1 for the unigram model, 2 for the bigram model, and 3 for the trigram model
+
+**Testing:** `python main.py <training data path> -n <n-gram size> -t <testing data path>`
+
+**Sentence generation:** `python main.py <training data path> -n 3 -g 3`
+
+Sentence generation applies only for the trigram model.
+
+**A note:** The program creates CSV files and saves them locally for efficiency. If you wish to change the training corpus, you must manually delete the CSVs before running.
+
 ## Introduction:
 
 **Description of an N-gram model:**
