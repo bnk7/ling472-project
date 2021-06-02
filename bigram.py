@@ -80,7 +80,7 @@ class LanguageModel:
     # include smoothing in train_prob
     def train_prob(self): # Anna
         """
-        Adds a probability column to the bigram df.
+        Adds a MLE column to the bigram df.
         """
         # for each row in bigram df
         for index, row in self.bigram_df.iterrows():
@@ -102,6 +102,10 @@ class LanguageModel:
     	    print(index, round(row['MLE'], 3))
 
     def train(self, train_corpus):
+        """
+        pass in the training corpus. prints each bigram with its logged MLE.
+        creates bigram_df.csv for efficiency after training the model once
+        """
         filename = "bigram_df.csv"
         if Path(filename).exists():
             self.bigram_df = pd.read_csv(filename, index_col=0)
@@ -154,6 +158,11 @@ class LanguageModel:
         return prob
 
     def calc_perplex(self, sum, count): # Anna
+        """
+        takes in the the sum of all the probabilities for all the sentences,
+        and the count of words in the test file, returns the perplexity for
+        the model
+        """
         H = -sum/count
         return round(2 ** H, 3)
 

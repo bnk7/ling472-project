@@ -60,6 +60,10 @@ class LanguageModel:
             print(index, round(row['MLE'], 3))
 
     def train(self, train_corpus):
+        """
+        pass in the training corpus, prints each unigram with its logged MLE
+        creates unigram_df.csv for efficiency after training the model once
+        """
         filename = "unigram_df.csv"
         if Path(filename).exists():
             self.df = pd.read_csv(filename, index_col=0)
