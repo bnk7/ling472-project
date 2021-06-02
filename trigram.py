@@ -109,8 +109,7 @@ class LanguageModel:
 
     def print_ngram(self): # Anna
         """
-        log2 the probability and save to new MLE column
-        prints out each trigram with its logged MLE
+        prints out each trigram with its logged MLE to the third decimal place
         """
         # <w1> <w2> <w3> <log2(P(w3|w1 w2))>
         # highest to lowest prob, 3 decimal place rounded
@@ -122,6 +121,10 @@ class LanguageModel:
     	    print(index, round(row['MLE'], 3))
 
     def train(self, train_corpus):
+        """
+        pass in the training corpus. prints each trigram with its logged MLE.
+        creates trigram_df.csv, trigram_bi_df.csv, trigram_uni_df.csv for efficiency after training the model once
+        """
         filename1 = "trigram_df.csv"
         filename2 = "trigram_bi_df.csv"
         filename3 = "trigram_uni_df.csv"
@@ -150,6 +153,9 @@ class LanguageModel:
         return unked_sent
 
     def score_prob(self, sent): # Anna
+        """
+        takes in a string sentence, returns the probability of the sentence
+        """
         prob = 0
         sent_list = sent.split()
         for i in range(len(sent_list)):
@@ -207,6 +213,12 @@ class LanguageModel:
 
 
     def generate(self):
+        """
+        Generates a sentence using trigram probabilities.
+        Ignores all <UNK>. Randomizes for valid starting word,
+        then randomizes the top three probabilities for each next
+        word.
+        """
         # randomize for the first trigram with start token </s> <s> word or <s> <s> word
         # randomize top 3 probabilities
         # until it hits a stop token
