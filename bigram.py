@@ -104,16 +104,19 @@ class LanguageModel:
     def train(self, train_corpus):
         """
         pass in the training corpus. prints each bigram with its logged MLE.
-        creates bigram_df.csv for efficiency after training the model once
+        creates bigram_df.csv and bigram_uni_df.csv for efficiency after training the model once
         """
         filename = "bigram_df.csv"
-        if Path(filename).exists():
+        filename2 = "bigram_uni_df.csv"
+        if Path(filename).exists() and Path(filename2).exists():
             self.bigram_df = pd.read_csv(filename, index_col=0)
+            self.unigram_df = pd.read_csv(filename2, index_col=0)
         else:
             self.read_data(train_corpus)
             self.train_unk()
             self.train_prob()
             self.bigram_df.to_csv(filename)
+            self.unigram_df.to_csv(filename2)
         self.print_ngram()
 
     # removes punctuation and adds stop tokens
