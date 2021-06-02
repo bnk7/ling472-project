@@ -2,7 +2,6 @@ from math import log2
 from numpy import tri
 import pandas as pd
 import re
-import random
 from pathlib import Path
 # !/usr/bin/python3
 
