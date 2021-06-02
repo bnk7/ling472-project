@@ -5,17 +5,6 @@ import re
 from math import log2
 from pathlib import Path
 
-"""
-1. save probabilties into csv and read them in train if they exist
-2. Generate sentences for trigram
-    randomize top 3 probabilities
-    randomize for the first trigram with start token </s> <s> word or <s> <s> word
-    print(1 if trigram runs well, 5 if bad)
-3. Error analysis on 5 sentences each
-4. Write-up
-
-"""
-
 class LanguageModel:
 
     def __init__(self):
@@ -58,7 +47,7 @@ class LanguageModel:
         prob = log2((cnt + 1)/denominator)
         return prob
 
-    # applies Laplace smoothing and adds a "probability" column
+    # applies Laplace smoothing and adds an "MLE" column
     def train_prob(self): # Brynna
         self.df['MLE'] = self.df.cnt.apply(self.get_train_prob)
 
@@ -109,12 +98,11 @@ class LanguageModel:
                 num_types = self.df.shape[0]
                 denom = num_tokens + num_types
                 MLE = log2(1.0/denom)
-            # adding logs is equivalent to multiplying normal numbers
+            # adding logs is equivalent to multiplying typical numbers
             prob += MLE
         return prob
 
     def calc_perplex(self, sum, count): # Arshana
-        #untested
         H = -sum / count
         return round(2 ** H, 3)
 
@@ -124,7 +112,6 @@ class LanguageModel:
         Prints out the perplexity of the system at the end. All rounded to the
         third decimal place.
         """
-        # I have not tested any of this code yet.
         total_prob = 0
         num_words = 0
         pattern = r'[^a-zA-Z0-9\s]'
@@ -143,12 +130,3 @@ class LanguageModel:
         # System's perplexity
         perplex = self.calc_perplex(total_prob, num_words)
         print("Perplexity = " + str(perplex))
-
-        # total_prob = 0
-        # break test_corpus -> entire_file
-            # print (line1)
-            # score_unk (line1) -> return unked sent
-                # add start and stop tokens
-            # score_prob(sent) -> return prob1
-            # total_prob += prob1
-        # calc_perplex(total_prob, num_words)

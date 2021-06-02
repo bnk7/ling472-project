@@ -5,17 +5,6 @@ import re
 from pathlib import Path
 # !/usr/bin/python3
 
-"""
-1. save probabilties into csv and read them in train if they exist
-2. Generate sentences for trigram
-    randomize top 3 probabilities
-    randomize for the first trigram with start token </s> <s> word or <s> <s> word
-    print(1 if trigram runs well, 5 if bad)
-3. Error analysis on 5 sentences each
-4. Write-up
-
-"""
-
 class LanguageModel:
 
     def __init__(self):
@@ -77,7 +66,6 @@ class LanguageModel:
                 row = pd.Series(data={"cnt": 1, "word1": w1, "word2": w2, "word3": w3}, name=gram)
                 self.trigram = self.trigram.append(row, ignore_index=False)
 
-
     # changes tokens only seen once into <UNK> and updates all dataframes
     def train_unk(self): # Brynna
         # adapt Arshana's unigram train_unk to UNK unigram_df
@@ -112,8 +100,6 @@ class LanguageModel:
         unked_trigram["cnt"] = unked_trigram.cnt.apply(int)
         self.trigram = unked_trigram
 
-        # add something if unk if missing from data possibly
-
     def train_prob(self): # Arshana
         # folded smoothing into this method
         for index, row in self.trigram.iterrows():
@@ -135,7 +121,6 @@ class LanguageModel:
         for index, row in self.trigram.iterrows():
     	    print(index, round(row['MLE'], 3))
 
-
     def train(self, train_corpus):
         filename1 = "trigram_df.csv"
         filename2 = "trigram_bi_df.csv"
@@ -155,9 +140,7 @@ class LanguageModel:
             self.unigram.to_csv(filename3)
         self.print_ngram()
 
-
     def score_unk(self, sent): # Arshana
-        # untested
         unked_sent = ""
         for w in sent.split():
             if w in self.unigram.index:
@@ -167,7 +150,6 @@ class LanguageModel:
         return unked_sent
 
     def score_prob(self, sent): # Anna
-        # not tested
         prob = 0
         sent_list = sent.split()
         for i in range(len(sent_list)):

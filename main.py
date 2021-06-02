@@ -1,4 +1,6 @@
 # !/usr/bin/python3
+# written mostly by the instructors of LING 472
+
 from argparse import ArgumentParser
 
 from bigram import LanguageModel as BigramModel
@@ -40,7 +42,7 @@ def main():
 
     parser.add_argument('-n', '--ngram', default=1, type=int,
                         help='the order of n-gram')
-                        
+
     parser.add_argument('-g', required=False)
 
     args = parser.parse_args()
@@ -66,7 +68,7 @@ def main():
     if args.test_corpus:
         print()
         lm.score(test_corpus=args.test_corpus)
-        
+
     elif args.g and args.ngram == 3:
         lm.generate()
 

@@ -33,7 +33,6 @@ class LanguageModel:
                 self.unigram_df = self.unigram_df.append(row, ignore_index=False)
 
         # make bigram df with bigram as index and each individual word as a column
-        # I used Anna's code as a starting point here too
         for i in range(len(entire_file)-1):
             first_word = entire_file[i]
             second_word = entire_file[i+1]
@@ -114,8 +113,7 @@ class LanguageModel:
         self.print_ngram()
 
     # removes punctuation and adds stop tokens
-    # adds start tokens if passed True
-    # start tokens assumes False if no parameter passed
+    # adds start tokens if passed True (default is False)
     def normalize_line(self, line, start_token=False): # Brynna
         line = re.sub(pattern=r"[^a-zA-Z0-9\s]", repl="", string=line)
         line = line.strip()
@@ -137,7 +135,6 @@ class LanguageModel:
         return " ".join(sent_list)
 
     def score_prob(self, sent): # Arshana
-        # not tested
         # adapted from trigram
         prob = 0
         sent_list = sent.split()
@@ -157,7 +154,6 @@ class LanguageModel:
         return prob
 
     def calc_perplex(self, sum, count): # Anna
-        # not tested
         H = -sum/count
         return round(2 ** H, 3)
 
@@ -174,7 +170,7 @@ class LanguageModel:
         lines = f.readlines()
         f.close()
 
-        # hopefully this is more efficient than a for-loop
+        # convert to Series in order to apply functions to each line
         lines_series = pd.Series(lines, dtype = "string")
         total_prob = lines_series.apply(self.score_line).sum()
 
