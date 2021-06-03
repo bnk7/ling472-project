@@ -40,10 +40,10 @@ We were assigned these texts with the goal of using the sentences to create n-gr
 || Perplexity for dev sets | Perplexity for test sets | Perplexity for train sets |
 -|-|-|-
 | Unigram | 555.179 | 559.895 | 582.655 |
-| Bigram | 93.709 | 93.709 | 93.709 |
+| Bigram | 765.956 | 779.626 | 633.546 |
 | Trigram | 4074.13 | 4114.151 | 2473.393 |
 
-Our performance with perplexity on the test set peaked at 93.709 on the bigram. Our unigram came in second with 559.895. Our trigram’s perplexity was much higher at 4114.151. We find it strangely unique that our perplexity was the same across the board for bigram over the train, dev, and test sets.
+Our performance with perplexity on the test set peaked at 559.895 on the unigram. Our bigram came in second with 779.626. Our trigram’s perplexity was much higher at 4114.151. 
 
 ## Error Analysis:
 
