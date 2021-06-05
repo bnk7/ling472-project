@@ -1,9 +1,10 @@
+# !/usr/bin/python3
+
 from math import log2
 from numpy import tri
 import pandas as pd
 import re
 from pathlib import Path
-# !/usr/bin/python3
 
 class LanguageModel:
 

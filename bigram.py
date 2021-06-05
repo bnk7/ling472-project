@@ -77,7 +77,7 @@ class LanguageModel:
         self.bigram_df = unked_bigram2
 
 
-    # include smoothing in train_prob
+    # includes smoothing
     def train_prob(self):
         """
         Adds a MLE column to the bigram df.
@@ -169,14 +169,14 @@ class LanguageModel:
         H = -sum/count
         return round(2 ** H, 3)
 
-    # takes a line, unks it, prints it and its probability, and returns the probability
+    # takes a line, <UNK>s it, prints it and its probability, and returns the probability
     def score_line(self, line):
         unked_line = self.score_unk(line)
         prob = self.score_prob(unked_line)
         print(line.strip() + " " + str(prob))
         return prob
 
-    def score(self, test_corpus): 
+    def score(self, test_corpus):
         # read in file
         f = open(test_corpus, 'r')
         lines = f.readlines()
