@@ -10,7 +10,7 @@ class LanguageModel:
     def __init__(self):
         self.df = pd.DataFrame(columns=["cnt"])
 
-    def read_data(self, corpus): # Anna
+    def read_data(self, corpus):
         """
         reads in corpus data to fill in the unigram df with the counts for each word
         index: word
@@ -29,7 +29,7 @@ class LanguageModel:
                 self.df = self.df.append(row, ignore_index=False)
         f.close()
 
-    def train_unk(self): # Arshana
+    def train_unk(self):
         num_unk = self.df.loc[self.df['cnt'] == 1].size
         # remove UNKed words
         self.df.drop(self.df[self.df['cnt'] == 1].index, inplace=True)
@@ -39,7 +39,7 @@ class LanguageModel:
         self.df = self.df.append(row, ignore_index=False)
 
     # returns the smoothed probability of a single word
-    def get_train_prob(self, cnt): # Brynna
+    def get_train_prob(self, cnt):
         # P = (count of unigram + 1)/(sum of all counts + size of vocab)
         num_tokens = self.df.cnt.sum()
         num_types = self.df.shape[0]
@@ -48,10 +48,10 @@ class LanguageModel:
         return prob
 
     # applies Laplace smoothing and adds an "MLE" column
-    def train_prob(self): # Brynna
+    def train_prob(self):
         self.df['MLE'] = self.df.cnt.apply(self.get_train_prob)
 
-    def print_ngram(self): #Arshana
+    def print_ngram(self):
         # fix alphabetical
         self.df.index.name = "index"
         self.df.sort_values(by=['MLE', "index"], ascending = [False, True], inplace = True)
@@ -75,7 +75,7 @@ class LanguageModel:
         self.print_ngram()
 
 
-    def score_unk(self, sent): # Anna
+    def score_unk(self, sent):
         """
         takes in a string sentence with no punctuation
         returns the unked string
@@ -89,7 +89,7 @@ class LanguageModel:
         return unked_sent
 
     # returns the probability of a sentence
-    def score_prob(self, sent): # Brynna
+    def score_prob(self, sent):
         # start with 0 because we're adding
         prob = 0
         sent_list = sent.split()
@@ -106,11 +106,11 @@ class LanguageModel:
             prob += MLE
         return prob
 
-    def calc_perplex(self, sum, count): # Arshana
+    def calc_perplex(self, sum, count):
         H = -sum / count
         return round(2 ** H, 3)
 
-    def score(self, test_corpus): # Anna
+    def score(self, test_corpus):
         """
         Reads in the test corpus and prints each line with its logged probability
         Prints out the perplexity of the system at the end. All rounded to the

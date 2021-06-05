@@ -12,17 +12,7 @@ class LanguageModel:
         self.bigram = pd.DataFrame(columns=["word1", "word2", "cnt"])
         self.trigram = pd.DataFrame(columns=["word1", "word2", "word3", "cnt"])
 
-    def read_data(self, corpus): # Arshana
-        # trigram index and three columns for words
-
-        # loop through list
-            # for df
-                # create trigram indices
-                # add w1, w2, w3 columns
-                # add count column and increment as appropriate
-            # for vocab df
-                # create unigram indices
-                # add count column and increment as appropriate
+    def read_data(self, corpus):
         # adapt code from bigram.py
         lines = corpus.readlines()
         # extra start on first line
@@ -67,15 +57,15 @@ class LanguageModel:
                 self.trigram = self.trigram.append(row, ignore_index=False)
 
     # changes tokens only seen once into <UNK> and updates all dataframes
-    def train_unk(self): # Brynna
-        # adapt Arshana's unigram train_unk to UNK unigram_df
+    def train_unk(self):
+        # adapt unigram train_unk to UNK unigram_df
         num_unk = self.unigram.loc[self.unigram["cnt"] == 1].size
         unked_words = self.unigram[self.unigram["cnt"] == 1].index
         df = self.unigram[self.unigram["cnt"] != 1]
         row = pd.Series(data={"cnt": num_unk}, name="<UNK>")
         self.unigram = df.append(row, ignore_index=False)
 
-        # adapt Anna's bigram train_unk to UNK bigram_df
+        # adapt bigram train_unk to UNK bigram_df
         self.bigram = self.bigram.replace(unked_words, "<UNK>")
         self.bigram = self.bigram.groupby(['word1', 'word2']).sum()
         unked_bigram = pd.DataFrame()
@@ -100,14 +90,14 @@ class LanguageModel:
         unked_trigram["cnt"] = unked_trigram.cnt.apply(int)
         self.trigram = unked_trigram
 
-    def train_prob(self): # Arshana
+    def train_prob(self):
         # folded smoothing into this method
         for index, row in self.trigram.iterrows():
             count = row['cnt'] + 1
             denom = self.bigram.loc[row['word1'] + " " + row['word2'], "cnt"] + len(self.unigram.index) - 1
             self.trigram.loc[index, 'MLE'] = log2(float(count)/denom)
 
-    def print_ngram(self): # Anna
+    def print_ngram(self):
         """
         prints out each trigram with its logged MLE to the third decimal place
         """
@@ -143,7 +133,7 @@ class LanguageModel:
             self.unigram.to_csv(filename3)
         self.print_ngram()
 
-    def score_unk(self, sent): # Arshana
+    def score_unk(self, sent):
         unked_sent = ""
         for w in sent.split():
             if w in self.unigram.index:
@@ -152,7 +142,7 @@ class LanguageModel:
                 unked_sent += "<UNK> "
         return unked_sent
 
-    def score_prob(self, sent): # Anna
+    def score_prob(self, sent):
         """
         takes in a string sentence, returns the probability of the sentence
         """
@@ -174,12 +164,11 @@ class LanguageModel:
                 prob += MLE
         return prob
 
-    def calc_perplex(self, sum, N): # Brynna
+    def calc_perplex(self, sum, N):
         H = (-1/N) * sum
         return round(2 ** H, 3)
 
-    def score(self, test_corpus): # Arshana
-        # untested
+    def score(self, test_corpus):
         total_prob = 0
         num_words = 0
 
@@ -219,11 +208,6 @@ class LanguageModel:
         then randomizes the top three probabilities for each next
         word.
         """
-        # randomize for the first trigram with start token </s> <s> word or <s> <s> word
-        # randomize top 3 probabilities
-        # until it hits a stop token
-        # print with no start/stop, add period
-
         # loop until creation of a valid sentence
         start_new_sentence = True
         while start_new_sentence:

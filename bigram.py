@@ -11,7 +11,7 @@ class LanguageModel:
         self.unigram_df = pd.DataFrame(columns=["cnt"])
         self.bigram_df = pd.DataFrame(columns=["w1", "w2", "cnt"])
 
-    def read_data(self, corpus): # Brynna
+    def read_data(self, corpus):
         f = open(corpus, 'r')
         lines = f.readlines()
         entire_file = ""
@@ -23,7 +23,7 @@ class LanguageModel:
             entire_file += "<s> " + line + " </s> "
         f.close()
 
-        # adapt Anna's unigram code to make unigram df
+        # adapt unigram code to make unigram df
         entire_file = entire_file.split()
         for word in entire_file:
             if word in self.unigram_df.index:
@@ -43,7 +43,7 @@ class LanguageModel:
                 row = pd.Series(data={"cnt": 1, "w1": first_word, "w2": second_word}, name=bigram)
                 self.bigram_df = self.bigram_df.append(row, ignore_index=False)
 
-    def train_unk(self): # Anna
+    def train_unk(self):
         """
         Unks the unigram df. Using the unked word list from the unigram,
         also unks the bigram df.
@@ -78,7 +78,7 @@ class LanguageModel:
 
 
     # include smoothing in train_prob
-    def train_prob(self): # Anna
+    def train_prob(self):
         """
         Adds a MLE column to the bigram df.
         """
@@ -94,7 +94,7 @@ class LanguageModel:
 
     # prints bigrams and their MLEs, rounded to 3 decimal places
     # and sorted by MLE (descending) and then bigram (alphabetical)
-    def print_ngram(self): # Brynna
+    def print_ngram(self):
         self.bigram_df.index.name = "index"
         self.bigram_df.sort_values(by=['MLE', "index"], ascending = [False, True], inplace = True)
         # print
@@ -121,7 +121,7 @@ class LanguageModel:
 
     # removes punctuation and adds stop tokens
     # adds start tokens if passed True (default is False)
-    def normalize_line(self, line, start_token=False): # Brynna
+    def normalize_line(self, line, start_token=False):
         line = re.sub(pattern=r"[^a-zA-Z0-9\s]", repl="", string=line)
         line = line.strip()
         line = line + " </s>"
@@ -130,7 +130,7 @@ class LanguageModel:
         return line
 
     # returns an UNKed sentence with start and end tokens
-    def score_unk(self, sent): # Brynna
+    def score_unk(self, sent):
         sent = self.normalize_line(sent, True)
         sent_list = sent.split()
         i = 0
@@ -141,7 +141,7 @@ class LanguageModel:
         # re-form the sentence and return
         return " ".join(sent_list)
 
-    def score_prob(self, sent): # Arshana
+    def score_prob(self, sent):
         # adapted from trigram
         prob = 0
         sent_list = sent.split()
@@ -160,7 +160,7 @@ class LanguageModel:
                 prob += MLE
         return prob
 
-    def calc_perplex(self, sum, count): # Anna
+    def calc_perplex(self, sum, count):
         """
         takes in the the sum of all the probabilities for all the sentences,
         and the count of words in the test file, returns the perplexity for
@@ -170,13 +170,13 @@ class LanguageModel:
         return round(2 ** H, 3)
 
     # takes a line, unks it, prints it and its probability, and returns the probability
-    def score_line(self, line): # Brynna
+    def score_line(self, line):
         unked_line = self.score_unk(line)
         prob = self.score_prob(unked_line)
         print(line.strip() + " " + str(prob))
         return prob
 
-    def score(self, test_corpus): # Brynna
+    def score(self, test_corpus): 
         # read in file
         f = open(test_corpus, 'r')
         lines = f.readlines()
